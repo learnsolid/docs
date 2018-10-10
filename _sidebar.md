@@ -4,7 +4,7 @@
  - [Solid 规范介绍](docs/guide/spec)
 * [Linked Data 基础](docs/linkedata/fundamentals)
  - [Linked Data 介绍](docs/linkedata/)
- - [使用 Trutle 展示 Linked Data](docs/linkedata/)
+ - [使用 Trutle 展示 Linked Datax](docs/linkedata/)
  - [使用 rdflib.js 操作 Linked Data](docs/linkedata/)
 * [基于 Angular 编写 Solid 程序](docs/linkedata/fundamentals)
 * [运行一个 Solid 服务器](docs/linkedata/fundamentals)
