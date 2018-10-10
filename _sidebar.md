@@ -8,3 +8,4 @@
  - [使用 rdflib.js 操作 Linked Data](docs/linkedata/)
 * [基于 Angular 编写 Solid 程序](docs/linkedata/fundamentals)
 * [运行一个 Solid 服务器](docs/linkedata/fundamentals)
+* [联系 Solid 中文网团队](contact)
