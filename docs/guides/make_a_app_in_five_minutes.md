@@ -79,7 +79,7 @@
 
 ## 步骤五：增加一个登录按钮
 
-向页面添加登录按钮，并设置事件处理程序，以便单击该按钮可触发Solid登录窗口。 这是通过由solid-auth-client初始化的window.solid.auth提供的popupLogin函数实现的。 我们将弹出窗口的位置作为参数传递。
+向页面添加登录按钮，并设置事件处理程序，以便单击该按钮可触发 Solid 登录窗口。 这是通过由 solid-auth-client 初始化的 window.solid.auth 提供的 popupLogin 函数实现的。 我们将弹出窗口的位置作为参数传递。
 
 向页面添加登录按钮，并监听点击时间。这是通过由 ```solid-auth-client``` 初始化的 ```window.solid.auth``` 提供的 ```popupLogin``` 函数实现的，我们通过参数指定了窗口弹出的位置。
 
@@ -150,7 +150,7 @@ RDFlib.js 是一个 JavaScript 框架，它能让我们与存储在 Solid pods �
 
 ## 步骤九: 显示用户名
 
-```solid-auth-client``` 允许我们在经过身份认证后从 ```pod`` 中拉取数据，RDFlib 允许我们解析和处理该数据。我们现在将获取用户的个人资料，并查找该用户的三元组。代码如下：
+```solid-auth-client``` 允许我们在经过身份认证后从 ```pod``` 中拉取数据，RDFlib 允许我们解析和处理该数据。我们现在将获取用户的个人资料，并查找该用户的三元组。代码如下：
 
 ``` javascript
 const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
