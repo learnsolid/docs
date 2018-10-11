@@ -4,7 +4,7 @@ Solid 是一组模块化规范，它构建并扩展了万维网（HTTP，REST，
 
 Solid 在 Github 上的规范地址为：[https://github.com/solid/solid-spec](https://github.com/solid/solid-spec)。
 
-Solid 的强大指出在于，将 Web 变成了一个分布式可供读写的数据库，将控制权从服务提供商转移给了用户。
+Solid 的强大在于，不仅将 Web 变成了一个分布式可供读写的数据库，还 将控制权从服务提供商转移给了用户。
 
 为了保证合法的数据写入和读取以及隐私保护，Solid 使用了 Web ACL（访问控制列表） 进行身份认证。
 
