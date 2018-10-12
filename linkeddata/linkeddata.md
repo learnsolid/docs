@@ -1,4 +1,4 @@
-# 互联数据基础
+# 互联数据（Linked Data）基础
 
 - [互联数据介绍](linkeddata/fundamentals)
 - [使用 Turtle 展示 Linked Datax](linkeddata/turtle)
