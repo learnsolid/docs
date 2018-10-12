@@ -7,7 +7,7 @@
 - [Linked Data 基础](linkeddata/linkeddata)
   - [互联数据介绍](linkeddata/fundamentals)
   - [用 Turtle 写互联数据](linkeddata/turtle)
-  - [用 rdflib.js 操作互联数据](linkeddata/)
+  - [用 rdflib.js 操作互联数据](linkeddata/rdflib)
 - [基于 Angular 编写 Solid 程序](linkedata/fundamentals)
 - [运行一个 Solid 服务器](linkedata/fundamentals)
 - [联系 Solid 中文网团队](contact)
