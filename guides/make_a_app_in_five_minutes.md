@@ -2,18 +2,18 @@
 
 这是针对新接触 Solid 的用户的快速入门。整个过程很简单，你甚至可以用一个午休时间完成。通过几个简单的步骤，我们将构建一个个人资料查看器。
 
-**学习目标：**
+## 学习目标：
 
 1. 使用 Solid 构建基本应用程序
 2. 登录和退出
 3. 从 Solid pod 中读取数据
 
-**预备知识：**
+## 预备知识：
 
 1. 基本的 HTML 和 CSS 知识
 2. 中级 JavaScript 技能
 
-**所需工具：**
+## 所需工具：
 
 1. 你喜欢的文本编辑器
 2. 在本地运行的 Web 服务器（例如 `npm install -g local-web-server` ）
@@ -26,7 +26,7 @@
 
 创建一个空白的 HTML 文档用来编写 Solid 程序：
 
-``` html
+```html
 <!doctype html>
 <html>
 <head>
@@ -51,9 +51,9 @@
 
 ## 步骤三：增加登录状态 UI 元素
 
-增加 2 个 ```<p>``` 元素到 HTML 页面中，一个显示已经登录，另外一个显示未登录。
+增加 2 个 `<p>` 元素到 HTML 页面中，一个显示已经登录，另外一个显示未登录。
 
-``` html
+```html
 <p id="login">
   You are not logged in.
 </p>
@@ -68,9 +68,9 @@
 
 ## 步骤四：增加 Solid 身份认证客户端
 
-```solid-auth-client``` 库帮助我们认证用户身份和安全的从用户的 pod 中获取数据，你需要手动添加以下的组件：
+`solid-auth-client` 库帮助我们认证用户身份和安全的从用户的 pod 中获取数据，你需要手动添加以下的组件：
 
-1. ```solid-auth0-client``` 脚本文件: https://solid.github.io/solid-auth-client/dist/solid-auth-client.bundle.js
+1. `solid-auth0-client` 脚本文件: https://solid.github.io/solid-auth-client/dist/solid-auth-client.bundle.js
 2. 一个处理用户登录的界面: https://solid.github.io/solid-auth-client/dist/popup.html
 
 将脚本文件放到入口脚本之前即可。
@@ -81,16 +81,16 @@
 
 向页面添加登录按钮，并设置事件处理程序，以便单击该按钮可触发 Solid 登录窗口。 这是通过由 solid-auth-client 初始化的 window.solid.auth 提供的 popupLogin 函数实现的。 我们将弹出窗口的位置作为参数传递。
 
-向页面添加登录按钮，并监听点击时间。这是通过由 ```solid-auth-client``` 初始化的 ```window.solid.auth``` 提供的 ```popupLogin``` 函数实现的，我们通过参数指定了窗口弹出的位置。
+向页面添加登录按钮，并监听点击时间。这是通过由 `solid-auth-client` 初始化的 `window.solid.auth` 提供的 `popupLogin` 函数实现的，我们通过参数指定了窗口弹出的位置。
 
-``` javascript
+```javascript
 const popupUri = 'popup.html';
 $('#login button').click(() => solid.auth.popupLogin({ popupUri }));
 ```
 
-我们现在希望在用户登录时更新界面，```solid.auth``` 提供了 ```trackSession``函数，该函数将在用户的登录状态发生变化时调用一个回调函数。 在用户登录时它是具有 webId 属性的对象，否则是 null。
+我们现在希望在用户登录时更新界面，`solid.auth` 提供了 ``trackSession`函数，该函数将在用户的登录状态发生变化时调用一个回调函数。 在用户登录时它是具有 webId 属性的对象，否则是 null。
 
-``` javascript
+```javascript
 solid.auth.trackSession(session => {
   const loggedIn = !!session;
   $('#login').toggle(!loggedIn);
@@ -107,7 +107,7 @@ solid.auth.trackSession(session => {
 
 和步骤五的步骤相似，只要赋予这个按钮退出功能就好了：
 
-``` javascript
+```javascript
 $('#logout button').click(() => solid.auth.logout());
 ```
 
@@ -119,7 +119,7 @@ $('#logout button').click(() => solid.auth.logout());
 
 这是构建用户资料查看器的第一步：
 
-``` html
+```html
 <p>
   <label for="profile">Profile:</label>
   <input id="profile">
@@ -128,31 +128,31 @@ $('#logout button').click(() => solid.auth.logout());
 
 为了便于测试，你可以将默认值设置为登录用户的 WebId：
 
-``` javascript
+```javascript
 solid.auth.trackSession(session => {
   // …
   if (session) {
     $('#user').text(session.webId);
-    if (!$('#profile').val())
-      $('#profile').val(session.webId);
+    if (!$('#profile').val()) $('#profile').val(session.webId);
   }
 });
 ```
+
 [点击这里](https://github.com/solid/profile-viewer-tutorial/tree/tutorials/lunch-break/steps/07)获取此步骤的代码。
 
 ## 步骤八：增加 RDFlib.js
 
-RDFlib.js 是一个 JavaScript 框架，它能让我们与存储在 Solid pods 中的 Linked Data 交互，你可以从  [https://linkeddata.github.io/rdflib.js/dist/rdflib.min.js](https://linkeddata.github.io/rdflib.js/dist/rdflib.min.js)  获取压缩过的代码。
+RDFlib.js 是一个 JavaScript 框架，它能让我们与存储在 Solid pods 中的 Linked Data 交互，你可以从 [https://linkeddata.github.io/rdflib.js/dist/rdflib.min.js](https://linkeddata.github.io/rdflib.js/dist/rdflib.min.js) 获取压缩过的代码。
 
-请将此框架放在 ``` solid-auth-client ``` 之后，这样 RDFlib 才可以使用身份认证功能。
+请将此框架放在 `solid-auth-client` 之后，这样 RDFlib 才可以使用身份认证功能。
 
 [点击这里](https://github.com/solid/profile-viewer-tutorial/tree/tutorials/lunch-break/steps/08)获取此步骤的代码。
 
 ## 步骤九: 显示用户名
 
-```solid-auth-client``` 允许我们在经过身份认证后从 ```pod``` 中拉取数据，RDFlib 允许我们解析和处理该数据。我们现在将获取用户的个人资料，并查找该用户的三元组。代码如下：
+`solid-auth-client` 允许我们在经过身份认证后从 `pod` 中拉取数据，RDFlib 允许我们解析和处理该数据。我们现在将获取用户的个人资料，并查找该用户的三元组。代码如下：
 
-``` javascript
+```javascript
 const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
 $('#view').click(async function loadProfile() {
   // Set up a local data store and associated data fetcher
@@ -167,26 +167,25 @@ $('#view').click(async function loadProfile() {
   const fullName = store.any($rdf.sym(person), FOAF('name'));
   $('#fullName').text(fullName && fullName.value);
 });
-
 ```
+
 [点击这里](https://github.com/solid/profile-viewer-tutorial/tree/tutorials/lunch-break/steps/09)获取此步骤的代码。
 
 ## 步骤十：显示用户的朋友们
 
 我们还可以显示用户的朋友们：
 
-``` javascript
+```javascript
 $('#view').click(async () => {
   // …
   const person = $('#profile').val();
   // …
   const friends = store.each($rdf.sym(person), FOAF('knows'));
   $('#friends').empty();
-  friends.forEach(async (friend) => {
+  friends.forEach(async friend => {
     await fetcher.load(friend);
     const fullName = store.any(friend, FOAF('name'));
-    $('#friends').append($('<li>')
-       .text(fullName && fullName.value || friend.value));
+    $('#friends').append($('<li>').text((fullName && fullName.value) || friend.value));
   });
 });
 ```
@@ -199,21 +198,24 @@ $('#view').click(async () => {
 
 通过一个简单的操作，我们可以让页面具有更好的交互性，我们不止只显示朋友列表，还可以让他们可点击，点击后跳转到朋友的资料页：
 
-``` javascript
+```javascript
 $('#view').click(async function loadProfile() {
   // …
   const person = $('#profile').val();
   // …
   const friends = store.each($rdf.sym(person), FOAF('knows'));
   $('#friends').empty();
-  friends.forEach(async (friend) => {
-	await fetcher.load(friend);
-	const fullName = store.any(friend, FOAF('name'));
-	$('#friends').append(
-  	$('<li>').append(
-    	$('<a>').text(fullName && fullName.value || friend.value)
-            	.click(() => $('#profile').val(friend.value))
-            	.click(loadProfile)));
+  friends.forEach(async friend => {
+    await fetcher.load(friend);
+    const fullName = store.any(friend, FOAF('name'));
+    $('#friends').append(
+      $('<li>').append(
+        $('<a>')
+          .text((fullName && fullName.value) || friend.value)
+          .click(() => $('#profile').val(friend.value))
+          .click(loadProfile)
+      )
+    );
   });
 });
 ```
@@ -221,5 +223,3 @@ $('#view').click(async function loadProfile() {
 强大灵活的 Linked Data 让我们可以在不同的 pod 之间操作数据，相信到这里你已经对 Solid 有了不少了解，请继续翻阅我们的文档了解更多吧。
 
 [点击这里](https://github.com/solid/profile-viewer-tutorial/tree/tutorials/lunch-break/steps/11)获取此步骤的代码。
-
-
