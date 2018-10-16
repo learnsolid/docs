@@ -56,31 +56,27 @@ $ yo @inrupt/solid-angular
 
 ### 步骤 1: 注册
 
-The first thing your users will need is a pod on a Solid server. You can get a pod quickly from an existing provider (link to solid site / providers page), or setup one on your own solid server (link to server setup doc).
+所有使用 Solid 的用户都必须有一个 Solid 帐号，[点击这里]()查看如何注册。
 
-To get started right away, you can [register with an existing Solid pod here](/get-a-solid-pod).
-
-In the future, we plan to ship an example registration workflow with the Solid-angular generator.
+在未来，我们会在 solid-angular 项目中增加注册 Solid 的流程。
 
 ### 步骤 2: 登录
 
-Once registered with a pod, your user can login using that provider. Provided in the sample application is a functional login workflow. By default, the page will redirect to the provider’s login page, then return to a url provided in the login call. In our example, it returns us to the profile page.
+一旦用户注册了 Solid，你的用户就可以登录任何支持 Solid 的pod。示例程序中提供了登录功能，默认情况下，页面将重定向到触发程序的地址，在我们的示例中，它将返回到我们的个人资料页面。
 
-An alternate workflow is also available if you don’t want to fully redirect your application. There is also a login popup, which will open a login prompt in a popup window instead.
+如果你不想通过重定向登录，那么可以用 login-popup，它提供了一个登录弹出窗口，登录操作会在弹出窗口中进行。
 
-Once login is complete, a localStorage item is created with the user’s token.
-
-In our current angular app example, we provide route guards against this localStorage object being missing. Another example of how angular could handle an unauthorized user is to use an Interceptor for 401 responses and redirect to login.
+登录完成后，我们把用户的 Token 存储到 localStorage 中。
 
 ### 步骤 3: 加载用户信息
 
-One the user is authenticated, the /card route will load. This is a profile card, and is intended only as an example of how to work with RDF data. The profile card page does a few things. First, it tries to getch the data using the rdf.service.ts angular service. Next, it takes the old form data and stashes it in localstorage.
+一个用户被认证后，``/card`` 页面会重新加载。``/card`` 页面是个人资料页面，只用来演示如何操作 RDF 数据，所以只做了很少的事情。首先，使用 ``rdf.service.ts`` 抓取数据；然后，将数据存储到 localStorage 中。
 
-This stashing of data is important, as we need a cached version of the original form data for the purposes of updating (more on that later).
+数据存储是非常重要的，因为我们需要一个控制原始数据的版本（为了达到更新效果，请往下看）。
 
-The rdfService call “getProfile” first uses the fetcher to load the current logged in user’s webID, then plucks the profile values out one at a time and maps them to a return object.
+rdfService 中有一个名为 ``getProfile``` 的方法，他用来加载当前用户 ID，然后将最新数据返回。
 
-```javascript
+``` javascript
 await this.fetcher.load(this.session.webId);
 
 return {
@@ -94,9 +90,9 @@ return {
 };
 ```
 
-The calls getValueFromVcard() and getPhone() etc, are helper functions in the rdfService. Here’s an example of what these functions look like:
+``getValueFromVcard()`` 和  ``getPhone()`` 是工具函数，类似下面这样： 
 
-```javascript
+``` javascript
 getValueFromVcard = (node: string, webId?: string) => {
   const store = this.store.any($rdf.sym(webId || this.session.webId), VCARD(node));
   if (store) {
@@ -106,11 +102,9 @@ getValueFromVcard = (node: string, webId?: string) => {
 };
 ```
 
-As you can see, it looks through the store for any value of a Vcard node that’s supplied, then returns the value (or an empty string). This is just a helper to simplify the process, since we used a lot of Vcard fields in this example we didn’t feel like we wanted to re-write the any() call multiple times, when we could just pass in a node name.
+这个函数遍历了 RDF 中的数据然后返回了非空的数据，这只是一个用来简化过程的工具函数。
 
-Once the data is loaded, getProfile() returns an object containing the profile fields. This is a custom object we created. Once that object is back in the card page, we bind that to the UI.
-
-For the purposes of this demo, we used the form input “name” field to map to the nodeName for easy mapping. Our goal is to have a more built-in way to do this, but for now we’re relying on manual data mapping.
+一旦数据加载完成后，``getProfile()`` 会返回一个带有用户资料的对象，这是我们模拟的一个数据，之后我们会将其绑定到 DOM 上。
 
 ### 步骤 4: 保存、更新用户信息
 
@@ -130,7 +124,7 @@ Both the insertion and deletion arrays expect the same thing: an rdf statement. 
 
 Once all that processing is complete, the updateProfile() call continues. The actual call to save is here, and is uses something called the updateManager.
 
-```javascript
+``` javascript
     this.updateManager.update(data.deletions, data.insertions, (response, success, message) => {
        //processing code
     }
@@ -140,29 +134,30 @@ As you can see, we pass in the deletions and insertions straight to the updateMa
 
 ## 项目结构
 
-The code structure should be very familiar to angular developers. For the most part, it maintains the structure of an out-of-the-box angular-cli generated application. Inside of the app folder, we created a few example components and filled them in where applicable.
+Angular 开发者应该很熟悉项目结构，他保持了 ``angular-cli`` 的原有项目结构，我们保持了一些示例组件，你可以视需求在里面创建其他文件。
 
-We purposely left the code as simple as possible, as the focus should be learning how to work with Solid and rdflib.js. Feel free to add new services, abstracts, interfaces, and so on, but we chose not to use these in order to streamline the Solid code as much as possible.
+我们的重点是学习 Solid 和 RDF.js，所以不会使用 Angular 的高级功能。
 
-### Areas of Interest
+### 感兴趣可看
 
-Here are the most relevant files to learn more about angular Solid development.
+以下是 angular Solid 项目的主要文件：
 
 - src/app/card/card.component
-  - This is the main profile page
+  - 个人资料页
 - src/app/home/home.component
-  - This is our login page
+  - 登录页面
 - src/app/login/login.component
-  - This is our login popup component - currently unused, but the code exists to swap between inline redirect or popup redirect methodologies.
+  - 登录弹出窗口，目前没有用到。
 - src/app/services/rfd.service.ts
-  - The main interface between the angular app and rdflib
+  - angular app 和 rdflib 的交互接口
 
 ## 注释
 
-A few quick notes about the code, as there are some hidden things you should know.
+这里有一些你应该知道的背后的东西：
 
-1. As mentioned above, the form is currently manually mapped to field names via the name attribute. There are other ways to do this, but this is a simple way to get started. In the future we hope to have a more automated way of mapping forms to data.
-2. Our form doesn’t handle fields with multiple values. For example you can have different phone numbers with different “types”. The app currently just grabs the first value and uses that. Same with email. If you look at the getPhone() or getEmail() functions, they perform a string split() on the separators, and grab index 1, which will be the first actual phone number.
-3. Address is currently not working. This is because address is not a field but a set of fields, and the UI/UX assumed it was a single field. We left this in as a failing field to show how to handle errors.
-4. Clicking the profile image at the top right of the menu bar will log you out.
-5. Some of our dependencies have their own dependencies that needed tweaking out of the box for angular 6. To fix any dependency errors, we had to add to tsconfig.ts some exceptions and paths.
+1. 上面的示例中使用 ``name`` 属性手动映射名称，我们希望未来可以自动化映射表单数据；
+2. 我们的表单不能处理具有
+3. 我们的表单不能处理拥有多个值的字段。比如你可能会有不同类型的电话（家庭、工作），但是目前的示例程序只认识第一个手机号。
+4. 地址目前不可用，因为地址不是一个简单的字段，而是一个字段集合，但是 UI 没有对这个特殊的字段做相应处理。我们这么做的目的是演示如何处理错误。
+5. 点击右上角的资料按钮你可以退出用户；
+6. 我们修改了 tsconfig.ts 中的一些配置，以确保兼容 Solid 项目，
