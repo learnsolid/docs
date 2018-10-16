@@ -1,55 +1,56 @@
 # 基于 Angular 编写 Solid 程序
 
+注意：阅读本篇文章需要你有 JavaScript 和 NPM 经验。
+
 ## 准备工作
 
-The easiest way to get started developing Solid with Angular is to use the solid-angular Yeoman generator. If you’re new to Yeoman, you can check out the helpful [Yeoman Getting Started](http://yeoman.io/learning/) guide. At its core, Yeoman is a scaffolding tool that will install all the basic files, folders, and dependencies that you will need to start coding right away.
+使用 Angular 开发 Solid 的最简单方法是使用 Yeoman 生成器，如果你不熟悉 Yeoman，可以[点击这里](http://yeoman.io/learning/)查看 Yeoman 入门指南。Yeoman 是一个脚手架工具，他可以快速生成 Angular 项目需要的所有基本文件、文件夹和依赖项。
 
-The code for the solid-angular generator can be found on github: [https://github.com/Inrupt-inc/generator-solid-angular](https://github.com/Inrupt-inc/generator-solid-angular).
+我们还在 Github 开源了一套 solid-angualr 程序：[https://github.com/Inrupt-inc/generator-solid-angular](https://github.com/Inrupt-inc/generator-solid-angular)。
 
-In a command line window, follow these steps:
+在安装完 Yeoman 后，请按照下列步骤在命令行中操作操作：
 
-1. npm install -g install @inrupt/generator-solid-angular
-2. Navigate to the root project folder you want the app to live in
-3. yo @inrupt/solid-angular
-4. Set an application name / folder name
-5. Angular files and dependencies are installed with a sample application ready to go
+``` shell
+$ npm install -g install @inrupt/generator-solid-angular
+$ mkdir test && cd test
+$ yo @inrupt/solid-angular
+```
 
-Once these steps are complete, you will have a sample application showing the basics of a Solid app. It will be able to login users in via Solid, and authenticate, fetch data from a pod, and update or delete data from a pod. You can start the application using angular-cli as usual, simply by using ng serve.
+然后输入应用名称，完成这些步骤后，你将看到一个示例程序，其中包括了 Solid 应用程序的基础知识。这个程序能通过 Solid 进行用户身份认证，还可以从 pod 中获取数据。如果你要启动程序，可以用 ```angular-cli``` 或 ```ng serve```。
 
-Welcome to Solid.
+欢迎来到 Solid 的世界。
 
 ## 依赖
 
-Below is a high-level list of dependencies for this app. It is not a comprehensive list by any means, but hits the major dependencies and gives a brief description of what they are.
+以下是这个项目用到的主要项目依赖：
 
-- Angular 6 and standard relevant libraries
-  - This should be self-explanatory! You can add more angular libraries if you need to, but the core Angular libraries are required for this sample application.
+- Angular 6
   - Github: [https://github.com/angular/angular](https://github.com/angular/angular)
-  - Website: [https://angular.io/](https://angular.io/)
+  - 网站: [https://angular.io/](https://angular.io/)
 - rdflib.js
-  - See documentation above on using rdflib.js. This is a required library for the sample application and will be the primary interface with the linked data graph used pervasively in Solid pods.
+  - 一个必须的库，用来操作 Linked Data 和 Solid pods
   - Github: [https://github.com/linkeddata/rdflib.js](https://github.com/linkeddata/rdflib.js)
-  - Website: [http://linkeddata.github.io/rdflib.js/doc/](http://linkeddata.github.io/rdflib.js/doc/)
+  - 网站: [http://linkeddata.github.io/rdflib.js/doc/](http://linkeddata.github.io/rdflib.js/doc/)
 - solid-auth-client
-  - See documentation above on using solid-auth-client and how authentication works for Solid. This is a required library for the sample application and will authenticate the user.
+  - 一个必须的库，用来认证 Solid 用户
   - Github: [https://github.com/solid/solid-auth-client](https://github.com/solid/solid-auth-client)
-  - Website: [https://solid.github.io/solid-auth-client/](https://solid.github.io/solid-auth-client/)
+  - 网站: [https://solid.github.io/solid-auth-client/](https://solid.github.io/solid-auth-client/)
 - PureCSS
-  - This is an optional library. Out of the box, the sample application uses the pureCSS grid system for layout purposes but it can be replaced by any layout system, or a custom layout solution.
+  - 可选库，一个 CSS 框架
   - Github: [https://github.com/pure-css/pure/](https://github.com/pure-css/pure/)
-  - Website: [https://purecss.io/](https://purecss.io/)
+  - 网站: [https://purecss.io/](https://purecss.io/)
 - ngx-toastr
-  - This is an optional library. For messaging purposes user-facing alerts and notifications, the sample application uses the ngx-toastr library. This can be replaced by any toast, alert, or popup system you choose and is intended only for demonstration purposes.
+  - 这是一个可选库，用来模拟类似手机上的消息提示框
   - Github: [https://github.com/scttcper/ngx-toastr](https://github.com/scttcper/ngx-toastr)
-  - Website: [https://scttcper.github.io/ngx-toastr/](https://scttcper.github.io/ngx-toastr/)
+  - 网站: [https://scttcper.github.io/ngx-toastr/](https://scttcper.github.io/ngx-toastr/)
 
-## 最简单的应用会做什么
+## 最简应用
 
-This sample application is a basic profile viewing and editing application. It consists of only a few pages and routes. There’s a login page and a profile page.
+我们来做一个可以查看和编辑用户基础资料的程序，它只有几个页面，包括登录页面和个人资料。
 
-You can login to see how authentication works, and view your profile information. Once it’s loaded, you can save or delete data using the profile form as well.
+您可以登录以查看身份认证是如何工作的，也可以查看你的个人资料信息。登录成功后，你可以随意修改数据。
 
-The goal of the sample app is to show the authentication process, as well as data manipulation inside of Solid, and provide an example of how to do it within the angular ecosystem.
+这个最简应用的目标是展示身份认证的过程以及如何操作 Solid 的数据。
 
 ## 工作流程
 
