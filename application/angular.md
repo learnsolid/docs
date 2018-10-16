@@ -108,29 +108,33 @@ getValueFromVcard = (node: string, webId?: string) => {
 
 ### 步骤 4: 保存、更新用户信息
 
-Once the profile is loaded, the form will display on the card page. If the user changes any field, and that angular form becomes dirty/touched, then a Save button will become available.
+当加载完个人资料后，将会出现一个表单。如果用户改变了表单中的任意一个字段，``Save`` 按钮将会从不可点击状态变为可点击。
 
-The save function has some things in it that are non-standard for current web development, so I’ll walk through that code here.
+``Save`` 按钮的实现不太符合现在的 Web 开发标准，所以我打算在这里说一下这段代码。
 
-The card page code is pretty simple. On form submit, we simply called the angular rdfService’s “updateProfile” function and pass the form in. On success, the card page saves the newly saved values in localstorage as the “cached” version.
+资料页面的代码很简单，当表单提交后，我们调用了 ``rdfService`` 的 ``updateProfile`` 方法，并将表单数据作为参数传递。执行成功后会将最新的数据存储到 localStorage 中作为一个``缓存``(cached) 版本。
 
-In the rdfService, the updateProfile(form) call does a lot. First, it sets up some variables used in the rdf update call. These include the logged in webID and profile links. Next, it calls a long function called transformDataForm. This call takes a few parameters that we set up in this function.
+在 ``rdfService`` 中，``updateProfile`` 方法做了很多事情。首先，他声明了一些变量用来在 RDF 调用中使用，这些包括了登录用户的 WebID 和数据链接；然后调用了一个名为 ``transformDataForm`` 的大型函数。
 
-The main purpose is to provide an output object containing an array of insertions and an array of deletions. Any new value will be in the insertions array and any changed or removed value will be in the deletions array. We need to map the form to these two arrays. If a field was changed, that would mean we need both a deletion item and an insertion item (it expects us to delete the old value and insert a new one in the same node).
+这个函数的作用是记录增加和删除的数据，新增的数据会存在 ``insertions`` 数组中，删除的数据会存在 ``deletions`` 数组中。如果表单发生了变化，我们需要同时删除一个数据，然后增加一个数据。
 
-To do this, we check the form field status, and only process dirty fields. No sense in updating unchanged fields. Next, we make sure the field exists. If not, it’s an insertion, and we add the data that’s expected of an insert.
+为了达到这个目的，我们先检查字段的状态（是否有过变化），然后我们要确定字段是存在的。如果不存在，那么他就是新加的字段，应该将其存在 ``insertions`` 数组中。
 
 Both the insertion and deletion arrays expect the same thing: an rdf statement. The ”statement” consists of the URI for the field, which in most cases is just the #me profile link. Next, it expects the node information - in this case “VCARD(fieldName)”. Third, it expects the value to either save or delete. Lastly, it expects the link to where the data is stored, in this case your webID without the #me at the end.
 
-Once all that processing is complete, the updateProfile() call continues. The actual call to save is here, and is uses something called the updateManager.
+``insertions`` 和 ``deletions`` 数组中都存储 ``rdf statment`` 对象。这个对象包含了每个字段的 URI。
+
+当数据处理完毕后，``updateProfile`` 将会被调用，这也是真正存储数据的函数。
+
+它使用了一个叫做 ``updateManager`` 的东西：
 
 ``` javascript
-    this.updateManager.update(data.deletions, data.insertions, (response, success, message) => {
-       //processing code
-    }
+this.updateManager.update(data.deletions, data.insertions, (response, success, message) => {
+  //processing code
+}
 ```
 
-As you can see, we pass in the deletions and insertions straight to the updateManager call. That will process and save the data in the arrays, and if it returns a success, we show a toast notification and reset our form to pristine and untouched.
+你可以看到，我们将 ``insertions`` 和 ``deletions`` 作为参数传递给了 ``updateManager``，如果操作成功，我们显示一个 ``Toast`` 通知用户保存成功，然后将保存按钮置为不可用。
 
 ## 项目结构
 
@@ -153,7 +157,7 @@ Angular 开发者应该很熟悉项目结构，他保持了 ``angular-cli`` 的�
 
 ## 注释
 
-这里有一些你应该知道的背后的东西：
+还有有一些你应该知道的背后的东西：
 
 1. 上面的示例中使用 ``name`` 属性手动映射名称，我们希望未来可以自动化映射表单数据；
 2. 我们的表单不能处理具有
