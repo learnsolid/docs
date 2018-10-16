@@ -120,8 +120,6 @@ getValueFromVcard = (node: string, webId?: string) => {
 
 为了达到这个目的，我们先检查字段的状态（是否有过变化），然后我们要确定字段是存在的。如果不存在，那么他就是新加的字段，应该将其存在 ``insertions`` 数组中。
 
-Both the insertion and deletion arrays expect the same thing: an rdf statement. The ”statement” consists of the URI for the field, which in most cases is just the #me profile link. Next, it expects the node information - in this case “VCARD(fieldName)”. Third, it expects the value to either save or delete. Lastly, it expects the link to where the data is stored, in this case your webID without the #me at the end.
-
 ``insertions`` 和 ``deletions`` 数组中都存储 ``rdf statment`` 对象。这个对象包含了每个字段的 URI。
 
 当数据处理完毕后，``updateProfile`` 将会被调用，这也是真正存储数据的函数。
