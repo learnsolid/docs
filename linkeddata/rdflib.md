@@ -2,31 +2,31 @@
 
 ## RDFLIB 是什么
 
-The easiest and best way to work with link data in Solid is to use a library called rdflib. Rdflib is a general toolbox for doing most things for linked data. It can store data, parse and serialize data into various formats, and keep track of changes to the data coming from the app or from the server.
+在 Solid 中处理互联数据的最简单最好的方式就是使用一个叫 `rdflib` 的库。`rdflib` 是一个通用的工具箱，用来处理几乎所有和互联数据相关的事情。它可以用来存储数据、把数据序列化成各种格式，还有跟踪来自前后端的数据变动。
 
 ## 术语表
 
-Here are some basic vocabulary terms we'll be using throughout this document.
+这里是我们接下来在文档中将会使用的一些术语。
 
-- Store - data structure to store graph data and perform queries against. This is the simplest way to work with linked data in rdflib. You can store data from Javascript, dump data out from it, or perform raw queries.
-- Fetcher - A helper object that connects to the web, loads data, and saves it back. More powerful than using a simple store object. When you have a fetcher, then you also can ask the query engine to go fetch new linked data automatically as your query makes its way across the web.
-- UpdateManager - An even more helper object. The UpdateManager allows you to send small changes to the server to “patch” the data as your user changes data in real time. It also allows you to subscribe to changes other people make to the same file, keeping track of upstream and downstream changes, and signaling any conflict between them.
-- Graph - A database for the semantic web. This database is seemingly arbitrary in terms of what is related to what. There are no parent or root nodes, and the connections between nodes is key.
-- Triples - An RDF concept that comprise of subject, predicate, and object. For example, storing the data “I have the name John” would be represented as a triple. Similarly,
-- Quad is like a triplebut also has a property to explain where the data came from.
-- Statement - Another word for quad.
+- **存储（Store）** - 用来存储图状数据并对其进行查询的数据结构。这是在 rdflib 中处理互联数据最简单的方式了，你可以用 Javascript 来存储数据、取出数据或者执行一些手动的查询。
+- **提取器（Fetcher）** - 一个用来连接到互联网、存取数据的辅助对象。它比简单的存储对象更强大一些，当你使用提取器遍历网络的时候，查询引擎会自动从互联网上提取互联数据。（A helper object that connects to the web, loads data, and saves it back. More powerful than using a simple store object. When you have a fetcher, then you also can ask the query engine to go fetch new linked data automatically as your query makes its way across the web.）
+- **更新管理器（UpdateManager）** - 另一个辅助对象。更新管理器让你能够发送小的变更给服务器，来让服务端的数据和用户的操作实时同步。它也让你可以订阅多个用户对同一文件的操作，保持上下游数据同步，并在出现冲突的时候提示用户。（An even more helper object. The UpdateManager allows you to send small changes to the server to “patch” the data as your user changes data in real time. It also allows you to subscribe to changes other people make to the same file, keeping track of upstream and downstream changes, and signaling any conflict between them.）
+- **图（Graph)** - 一个语义网数据库，这个数据库里面的哪个节点与哪个节点有关联是比较任意的。里面没有父节点或者根节点的概念，还有节点之间的联系都是密钥。（A database for the semantic web. This database is seemingly arbitrary in terms of what is related to what. There are no parent or root nodes, and the connections between nodes is key.）
+- **三元组（Triples）** - 一个 RDf 里的概念，它由主语、谓词、宾语组成。例如当你要存储『我的名字是王五』的时候，你就会把它表示成一个三元组。（An RDF concept that comprise of subject, predicate, and object. For example, storing the data “I have the name John” would be represented as a triple.）
+- **四元组（Quad）** - 和三元组差不多，只不过多了一个属性来解释这个数据的来源（is like a triple but also has a property to explain where the data came from.）
+- **陈述（Statement）** - 四元组的别名。
 
 ## 配置 rdflib.js
 
-Typically people define rdflib in your module as $rdf, so that you an easily cut and paste code between projects and examples here, without confusion.
+一般人们会在代码中把 rdflib 表示成 `$rdf`，这样你可以比较轻松地复制黏贴这里的代码，也方便参考别的项目的代码，而且不容易有歧义。
 
-Installation steps (using npm):
+用 npm 来安装这个库：
 
 ```shell
 npm install rdflib --save
 ```
 
-and then in your code, you will need the following line as well:
+然后在你的代码里这样使用它（ES6 写法）：
 
 ```javascript
 const $rdf = require(‘rdflib’)
@@ -34,15 +34,15 @@ const $rdf = require(‘rdflib’)
 
 ## 配置一个存储（Store）
 
-Suppose we have a store, and we set up a person and their profile. Their webid is the URI 'https://example.com/alice/card#me', which is, if you like, a local variable ‘me’ within the the file 'https://example.com/alice/card'.
+如果我们有了一个存储，然后我们想要存入一个人和他的个人档案（profile），这个人的 WebID 是 URI `https://example.com/alice/card#me`，它是文件 `https://example.com/alice/card` 中的一个局部变量 `me`。
 
-There are two ways of creating a store:
+有两种方式来创建 store，比如：
 
 ```javascript
 const store = new $rdf.IndexedFormula();
 ```
 
-and the shortcut:
+还有简写方式：
 
 ```javascript
 const store = $rdf.graph();
@@ -50,50 +50,60 @@ const store = $rdf.graph();
 
 ## 使用存储
 
-Let's set up a variable for the person of interest, and one for their profile document. Note that the URIs for abstract things in RDF have a # and a local id, just like anchors in HTML. The NamedNode method doc() generates a Named Node for the document.
+我们来给这人创建一个变量，还有给他的个人档案也创建一个变量。注意到 RDF 中用来表示抽象事物的 URI 后面都有个井号 `#` 还有一个局部 id，就像 HTML 中的锚点。命名节点函数 `doc()` 为文档生成了一个命名节点（NamedNode）。
 
 ```javascript
 const me = store.sym('https://example.com/alice/card#me');
 const profile = me.doc(); //i.e. store.sym(''https://example.com/alice/card#me')
 ```
 
-We are going to be using the VCARD terms, and so we set up a Namespace object to which generates the right predicate URIs for each term.
+现在我们想要使用 vCard（电子名片）这个术语集，我们用一个它的命名空间对象来生成我们要的那些谓词的 URI。
 
 ```javascript
 const VCARD = new $rdf.Namespace(‘http://www.w3.org/2006/vcard/ns#‘);
 ```
 
-If we don’t know which vocabulary to use, various groups have their favorite lists. One is the solid-ui list of namespaces.
+如果我们不知道要用哪些词语，各个社区有他们偏好的词语列表，比如其中一个就是 `solid-ui` 的命名空间的列表。
 
 We add a name to the store as though it was stored in the profile:
+
+我们天津一个名字到存储里面，把它加到个人档案里。
 
 ```javascript
 store.add(me, VCARD(‘fn’), “John Bloggs”, profile);
 ```
 
-The third parameter, the object, is formally an RDF Term, here it would be a Literal. But you can give a string like “John Bloggs”, and rdflib will generate the right internal object. It will do that with strings, numbers, Javascript Date objects.
+第三个参数，也就是宾语，严格地说应该填一个 RDF 形式的术语在这，而此处直接填了一个字符串。不过当你填入像 “John Bloggs” 这样的字符串的时候，rdflib 会自动帮你转换成正确形式的内部表示形式。字符串、数字、JavaScript Date 对象都会得到这样的自动转换。
 
 We have some data - one quad - in our store! Let's read it out.
 
 Now to check what name is given to this person specifically in their profile, we do:
 
+我们现在有一些数据 —— 一个四元组 —— 存放在我们的存储里！ 来读取看看吧。
+
+现在，要查看此人在其个人资料中的姓名，我们可以：
+
 ```javascript
 let name = store.any(me, VCARD('name'), null, profile);
 ```
 
-If you are not concerned which file the data may have come from, then you can omit the last parameter -- in fact the object too as it is a wildcard:
+如果您不关心数据可能来自哪个文件，那么您可以省略最后一个参数 —— 实际上内部也是一个对象，因为它是个通配符：
 
 ```javascript
 let name = store.any(me, VCARD('name'));
 ```
 
-Then you will pull in any name from any file you have loaded.
-
 So we have added triples here to a local store. That has just been using it as an in-memory database. Most of the time in a Solid app, we’ll use it as a way of getting and saving data to the web.
+
+然后，您将从已加载到存储的任何文件中提取任何类型为 name 的名称数据。
+
+所以我们在这里添加了三元组到本地存储，把它作为一个内存数据库来使用。在 Solid 应用中，我们将其用作获取和保存数据到 Web 上的主要方式。
 
 ### 在存储中用 Turtle
 
 Let’s look at two more local operations. If you have turtle text for some data, you can load it into the store using $rdf.parse:
+
+让我们看看另外两个操作本地存储的例子，如例如你有一些用 turtle 写的数据，可以使用 `$rdf.parse` 将其加载到存储中：
 
 ```javascript
 let text = '<#this>  a  <#Example> .';
@@ -105,6 +115,8 @@ $rdf.parse(text, store, doc.uri, ‘text/turtle’);  // pass base URI
 
 Note that we must specify a document URI, as the store works by keeping track of where each triple belongs.
 
+请注意，我们必须指定一个文档 URI，因为本地存储通过跟踪每个三元组所属的文档来工作。
+
 ```javascript
 > store.toNT()
 '{<https://example.com/alice/card.ttl#this> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/alice/card.ttl#Example> .}'
@@ -112,53 +124,59 @@ Note that we must specify a document URI, as the store works by keeping track of
 
 We can similarly generate a turtle text from the store. Serialize is the function. You pass it the document (as a NamedNode) we are talking about, and it will just select the triples from that document to be output.
 
+我们可以类似地从本地存储中序列化出 turtle 文本，用 Serialize 函数。把文档作为 名节点（NamedNode）传给它，它会从该文档中选择一些三元组并序列化出来。
+
 ```javascript
 console.log($rdf.serialize(doc, store, aclDoc.uri, 'text/turtle'));
 ```
 
 If you omit the document parameter to serialize, or pass null, then you will get all the triples in the store. This may, if you have used a Fetcher, possibly metadata which the fetcher has stored about the HTTP requests it made in fetching your documents. Which might be interesting... but not what you were expecting.
 
+如果省略要序列化的第一个参数（doc），或传 null，那么您将获得存储中的所有的三元组。如果您使用了提取器（Fetcher），有可能取出来一堆提取器在获取文档时发出的 HTTP 请求的元数据，因为它们也存在存储里了。这可能很有趣，但不会是你所期待的那种效果。
+
 ### 用 match() 来搜索存储
 
-The store’s match(s, p, o, d) method allows you to pull out any combination of quads:
+存储的函数 `match(s, p, o, d)` 让你可以搜出任何形式的四元组：
 
 ```javascript
 let quads = store.match(subject, predicate, object, document);
 ```
 
-Any of the parameters can be null (or undefined) as a wildcard, meaning “any”. The quads which are returned are returned as an array Statement objects.
+任一个参数都可以为 null、undefined，这时它表示通配符，即「任意」。返回的四元组是陈述对象（Statement objects）的数组。
 
 Examples:
 
-|                                 |                                                               |
-| ------------------------------- | ------------------------------------------------------------- |
-| match()                         | gives all the statements in the store                         |
-| match(null, null, null, doc)    | gives all the statements in the document                      |
-| match(me, null, null, me.doc()) | gives all the statements in my profile where I am the subject |
-| match(null, null, me, me.doc()) | gives all the statements in my profile where I am the object  |
-| match(null, LDP(‘contains’))    | gives all the statements whose predicate is ldp:contains      |
+|                                     |                                                |
+| ----------------------------------- | ---------------------------------------------- |
+| match（）                           | 给出商店中的所有陈述                           |
+| match（null，null，null，doc）      | 给出文档中的所有语句                           |
+| match（me，null，null，me.doc（）） | 给出在我的个人档案中的，以我作为主语的所有陈述 |
+| match（null，null，me，me.doc（）） | 在我的个人档案中的，以我作为宾语的所有陈述     |
+| match（null，LDP（'contains'））    | 给出谓词为 `ldp：contains` 的所有语句          |
 
-Once you have a set of statements, you typically want to look at the properties of the statement.
+一旦你取出了一组语句，通常你还需要获取取出的陈述的属性。
 
-|           |                                |
-| --------- | ------------------------------ |
-| subject   | The Node of the subject        |
-| predicate | The NamedNode of the predicate |
-| object    | The Node of the subject        |
-| why       | The NamedNode of the document  |
-
-The last property is called why because it tells us why we should believe it. In a simple linked data system this is a document we have read. In a more complex system this could point to an inference step. It can also be a special object put in by the Fetcher to store the results of its HTTP operations on the web.
+|        |                             |
+| ------ | --------------------------- |
+| 主语   | 主语的节点                  |
+| 谓词   | 谓词的命名节点（namedNode） |
+| 对象   | 主语的节点                  |
+| 为什么 | 文档的命名节点（namedNode） |
 
 So to find out all the document which mention an old email addess as the object of any statement
+
+最后一个属性被称为「为什么」，因为它告诉我们为什么我们应该相信它。 在一个简单的互联数据系统中，它是我们读过的一篇文档。在更复杂的系统中，这可能指向推理步骤。它也可以是提取器放入的一个特殊对象，用于把其 HTTP 请求的结果存储到 Web 上。
+
+因此，如果你要找出所有宾语是某个被 albert 弃用了的邮件地址的文档：
 
 ```javascript
 let oldEmail = $rdf.sym('mailto:albert@example.com');
 let outOfDate = store.match(null, null, oldEmail, null).map(st => st.why);
 ```
 
-Note how we pull in all the statements and then just keep the ‘why’ parts.
+注意到我们用通配符来加载所有陈述，而只保留询问「为什么」的部分。
 
-So to find out all the document which mention Alice as the subject or object of any statement
+因此，如果你想找出所有把 Alice 作为主语或者宾语的陈述，可以这么做：
 
 ```javascript
 let mentions = store
@@ -167,19 +185,19 @@ let mentions = store
   .map(st => st.why);
 ```
 
-Note also while we are here the handy
+注意到用这个方便的写法：
 
 ```javascript
 let aboutAlice = store.connectedStatements(alice, alice.doc());
 ```
 
-which pulls in the statements which mention Alice, plus those which mention connected blank nodes, which could include things like the structure of Alice's address, for example.
+这会加载所有提及到 Alice 的陈述，加上那些提到链接到其他内容的空白节点，它可能会关联到像 Alice 的地址之类的信息。
 
-Suppose we have loaded a bunch of LDP folders and we want to pull out all the pairs of files where one is inside the other.
+假如我们加载了一大堆 LDP 里的文件夹，我们现在想要加载所有文件对，约束是其中一个装在另一个里面：
 
 ```javascript
 store.match(null, LDP(‘contains’)).forEach(st => {
-	console.log(st.subject + ‘ contains + st.object)
+  console.log(st.subject + ‘ contains + st.object)
 });
 ```
 
