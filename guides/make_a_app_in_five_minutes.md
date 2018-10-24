@@ -88,7 +88,7 @@ const popupUri = 'popup.html';
 $('#login button').click(() => solid.auth.popupLogin({ popupUri }));
 ```
 
-我们现在希望在用户登录时更新界面，`solid.auth` 提供了 ``trackSession`函数，该函数将在用户的登录状态发生变化时调用一个回调函数。 在用户登录时它是具有 webId 属性的对象，否则是 null。
+我们现在希望在用户登录时更新界面，`solid.auth` 提供了 `trackSession`函数，该函数将在用户的登录状态发生变化时调用一个回调函数。 在用户登录时它是具有 webId 属性的对象，否则是 null。
 
 ```javascript
 solid.auth.trackSession(session => {
