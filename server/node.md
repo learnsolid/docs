@@ -1,50 +1,52 @@
 # 安装并运行一个 NodeJS Solid 服务器
 
-The primary implementation offered of Solid is written in Javascript based on [Node.js](https://nodejs.org/). It should run on versions later than version 8. It is being [developed on Github](https://github.com/solid/node-solid-server) and is released with the liberal MIT license [to NPM](https://www.npmjs.com/package/solid-server). To give it a spin, you can download Node.js, including npm, and get it running quickly. We have an extensive [module README](https://github.com/solid/node-solid-server#install) that provides an overview of the many options of the server and is very useful a development environment. For a simple single-user production installation, we provide an example for Debian systems:
+目前 Solid 的服务端实现仅支持 [Node.js](https://nodejs.org/) v8 及以上。整个程序在 Github 上开源，名称为 [solid-server](https://github.com/solid/node-solid-server)。如果你想快速预览，我们提供了一个 [README](https://github.com/solid/node-solid-server#install) 来帮助你快速安装 ```solid-server```。在这个例子中，我们主要演示如何在 Debian 操作系统上安装并运行 solid-server。
 
-## Example install: Solid Server on Debian GNU/Linux
+## 示例安装：在 Debian GNU/Linux 上安装 Solid Server
 
-Following [these instructions](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions), we install Node.js and npm like this
-
-```shell
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-sudo apt-get install -y nodejs build-essential
-```
-
-As root, you can now install the server globally:
+首先安装 Node.js 和 NPM：
 
 ```shell
-npm install -g solid-server
+$ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+$ sudo apt-get install -y nodejs build-essential
 ```
 
-Now, you need to decide what is going to be your hostname, we will use your.host.example.org in the following. You should also decide where you want to keep the files the server needs to run. The configuration, data, and supporting metadata database can be kept separate if you want, but we’ll keep them together.
-
-Since everything going on with a Solid server is encrypted, you will need a SSL key and certificate. This can be obtained from e.g. [Let’s Encrypt](https://letsencrypt.org/). The easiest way to do this is to use certbot, to do this on Debian Stable, you need a backported package. To obtain that, add this line to your /etc/apt/sources.list:
+如果你是 ```root``` 用户，可以使用 NPM 全局安装 solid server：
 
 ```shell
-deb http://ftp.debian.org/debian stretch-backports main
+$ npm install -g solid-server
 ```
 
-Then, certbot can be installed with:
+接下来，你需要想一个 hostname，在这个例子中，我们会使用 ```your.host.example.org``` 用来演示。当然，你最好还有一台服务器用来部署 Solid Server（你的开发机也行）。Solid Server 中的所有配置文件、数据以及元信息数据库都可以分布式存储，但是这个例子中我们把它们都放到一起。
+
+所有的 Solid Server 都需要一个 SSL key 和证书用来加密通信，这可以通过 [Let’s Encrypt](https://letsencrypt.org/) 获得。除此之外，最简单的方式是用 ```certbox```，请按照下面这个教程安装 ```certbox```。
+
+首先将以下信息加到 ```/etc/apt/sources.list``` 中：
 
 ```shell
-apt-get update
-apt-get -t stretch-backports install certbot
+$ deb http://ftp.debian.org/debian stretch-backports main
 ```
 
-Then, request and install the certificate using:
+然后，通过以下命令安装 ```certbox```：
 
 ```shell
-certbot certonly --authenticator standalone -d your.host.example.org
+$ apt-get update
+$ apt-get -t stretch-backports install certbot
 ```
 
-Then, go,
+接着，安装证书：
 
 ```shell
-solid init
+$ certbot certonly --authenticator standalone -d your.host.example.org
 ```
 
-You will be prompted for several things, it could look like this:
+最后，我们初始化 Solid：
+
+```shell
+$ solid init
+```
+
+初始化时会要求你提供很多信息，就像下面这样：
 
 ```shell
 ? Path to the folder you want to serve. Default is /var/www/your.host.example.org/data
@@ -66,20 +68,20 @@ config created on /root/config.json
 
 Then, you need to create the paths that you entered. You would also need to copy the config.json file to where you indicated it should be.
 
-You should be able to start the server now with:
+然后就可以正式启动 Solid 了：
 
 ```shell
-solid start
+$ solid start
 ```
 
-However, we recommend that you use e.g. systemd to automatically start and stop the server.  
-Since it is a security risk to run the server as root, you should create a user for it, with e.g.
+我们推荐使用 ```systemd``` 自动重启和停止 Solid Server。
+为了安全起见，不要以 root 用户运行 Solid Server，请创建一个用户来运行，例如：
 
 ```shell
-adduser --system --ingroup www-data --no-create-home solid
+$ adduser --system --ingroup www-data --no-create-home solid
 ```
 
-Then, create a file /lib/systemd/system/solid.service containing
+接着创建一个名为 ```/lib/systemd/system/solid.service``` 的文件，内容为：
 
 ```ini
 [Unit]
@@ -98,48 +100,39 @@ Restart=on-failure
 WantedBy=multi-user.target
 ```
 
-Then, symlink that:
+然后给它一个软链接：
 
 ```shell
-ln -s /lib/systemd/system/solid.service /etc/systemd/system/multi-user.target.wants/
+$ ln -s /lib/systemd/system/solid.service /etc/systemd/system/multi-user.target.wants/
 ```
 
-Now, make the directories owned by the user:
+现在，给文件夹赋予权限：
 
 ```shell
-cd /var/www/your.host.example.org/
-chown solid:www-data config/ data/ .db/
+$ cd /var/www/your.host.example.org/
+$ chown solid:www-data config/ data/ .db/
 ```
 
-You may also need to make the config.json file readable to the unprivileged user.
-
-Now, starting the server should be done by:
+最后，用 ```systemctl``` 启动 Solid Server：
 
 ```shell
-systemctl start solid.service
+$ systemctl start solid.service
 ```
 
-You should now also have the other facilities provided by systemd available, and it should start automatically after the machine is booted.
-
-The certificate needs to be renewed every few months, and you should modify your Let’s Encrypt setup to use the webroot plugin, which is better to use when the server is running. To do so, modify the file /etc/letsencrypt/renewal/your.host.example.org.conf . Make sure the authenticator line reads:
+SSL 证书需要每隔几个月刷新一次，请修改 ```/etc/letsencrypt/renewal/your.host.example.org.conf``` 文件为以下内容：
 
 ```ini
 authenticator = webroot
-```
-
-Also set:
-
-```ini
 webroot_path = /var/www/your.host.example.org/data
 [[webroot_map]]
 your.host.example.org = /var/www/your.host.example.org/data
 ```
 
-Then, create a cron job by creating a file in /etc/cron.daily/ that contains:
+最后，创建一个名为 ```/etc/cron.daily/``` 的文件以创建一个 crontab，内容如下：
 
 ```shell
 #!/bin/bash
 certbot renew -w /var/www/your.host.example.org/data/
 ```
 
-Now, you should have a working Solid server! Enjoy!
+现在，你的 Solid Server 应该已经可以正常工作了！请尽情享受 Solid 世界吧！
