@@ -19,7 +19,7 @@ $ npm install -g solid-server
 
 接下来，你需要想一个 hostname，在这个例子中，我们会使用 ```your.host.example.org``` 用来演示。当然，你最好还有一台服务器用来部署 Solid Server（你的开发机也行）。Solid Server 中的所有配置文件、数据以及元信息数据库都可以分布式存储，但是这个例子中我们把它们都放到一起。
 
-所有的 Solid Server 都需要一个 SSL key 和证书用来加密通信，这可以通过 [Let’s Encrypt](https://letsencrypt.org/) 获得。除此之外，最简单的方式是用 ```certbox```，请按照下面这个教程安装 ```certbox```。
+所有的 Solid Server 都需要一个 SSL key 和证书用来加密通信，这可以通过 [Let’s Encrypt](https://letsencrypt.org/) 获得。除此之外，最简单的方式是用 ```certbot```，请按照下面这个教程安装 ```certbot```。
 
 首先将以下信息加到 ```/etc/apt/sources.list``` 中：
 
