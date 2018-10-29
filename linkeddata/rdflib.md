@@ -1,26 +1,27 @@
 # 用 rdflib.js 操作互联数据
 
+
 ## RDFLIB 是什么
 
-在 Solid 中处理互联数据的最简单最好的方式就是使用一个叫 `rdflib` 的库。`rdflib` 是一个通用的工具箱，用来处理几乎所有和互联数据相关的事情。它可以用来存储数据、把数据序列化成各种格式，还有跟踪来自前后端的数据变动。
+在 Solid 中，处理互联数据的最简易的方式就是使用一个叫 `rdflib` 的库。`rdflib` 是一个通用的工具箱，用来处理大部分和互联数据相关的事情。它可以用来存储数据、将数据序列化成各种格式、解析序列化后的数据，以及跟踪来自前后端的数据变动。
 
 ## 术语表
 
 这里是我们接下来在文档中将会使用的一些术语。
 
-- **存储（Store）** - 用来存储图状数据并对其进行查询的数据结构。这是在 rdflib 中处理互联数据最简单的方式了，你可以用 Javascript 来存储数据、取出数据或者执行一些手动的查询。
-- **提取器（Fetcher）** - 一个用来连接到互联网、存取数据的辅助对象。它比简单的存储对象更强大一些，当你使用提取器遍历网络的时候，查询引擎会自动从互联网上提取互联数据。（A helper object that connects to the web, loads data, and saves it back. More powerful than using a simple store object. When you have a fetcher, then you also can ask the query engine to go fetch new linked data automatically as your query makes its way across the web.）
-- **更新管理器（UpdateManager）** - 另一个辅助对象。更新管理器让你能够发送小的变更给服务器，来让服务端的数据和用户的操作实时同步。它也让你可以订阅多个用户对同一文件的操作，保持上下游数据同步，并在出现冲突的时候提示用户。（An even more helper object. The UpdateManager allows you to send small changes to the server to “patch” the data as your user changes data in real time. It also allows you to subscribe to changes other people make to the same file, keeping track of upstream and downstream changes, and signaling any conflict between them.）
-- **图（Graph)** - 一个语义网数据库，这个数据库里面的哪个节点与哪个节点有关联是比较任意的。里面没有父节点或者根节点的概念，还有节点之间的联系都是密钥。（A database for the semantic web. This database is seemingly arbitrary in terms of what is related to what. There are no parent or root nodes, and the connections between nodes is key.）
-- **三元组（Triples）** - 一个 RDf 里的概念，它由主语、谓词、宾语组成。例如当你要存储『我的名字是王五』的时候，你就会把它表示成一个三元组。（An RDF concept that comprise of subject, predicate, and object. For example, storing the data “I have the name John” would be represented as a triple.）
-- **四元组（Quad）** - 和三元组差不多，只不过多了一个属性来解释这个数据的来源（is like a triple but also has a property to explain where the data came from.）
-- **陈述（Statement）** - 四元组的别名。
+* **存储器 (Store)：** 用来存储图状数据并可以对其进行查询的数据结构。这是在 `rdflib` 中处理互联数据最简单的方式。你可以用 Javascript 来存储数据、取出数据或者执行一些手动的查询。
+* **提取器 (Fetcher)：** 一种用来连接到互联网、存取数据的辅助对象。它比简单的存储对象更强大一些，当你使用提取器遍历网络的时候，查询引擎会自动从互联网上提取互联数据。
+* **更新管理器 (UpdateManager)：** 另一种辅助对象。更新管理器让你能够发送小的变更给服务器，来让服务端的数据和用户的操作实时同步。它也让你可以订阅多个用户对同一文件的操作，保持上下游数据同步，并在出现冲突的时候提示用户。
+* **图 (Graph)：** 语义网数据库。这种数据库中的哪个节点与哪个节点有关联是比较任意的，里面没有父节点或者根节点的概念，并且节点之间的联系都是键。
+* **三元组 (Triples)：** 资源描述框架 (RDF) 里的一个概念，它由主语、谓词、宾语构成。例如，当你要存储『我的名字是王五』的时候，你就会把它表示成一个三元组。
+* **四元组 (Quad)：** 和三元组类似，只不过多了一个属性来表示这个数据的来源。
+* **语句 (Statement)：** 四元组的别名。
 
-## 配置 rdflib.js
+## 配置rdflib.js
 
-一般人们会在代码中把 rdflib 表示成 `$rdf`，这样你可以比较轻松地复制黏贴这里的代码，也方便参考别的项目的代码，而且不容易有歧义。
+大家习惯在代码模块中把 `rdflib` 定义成 `$rdf`，因为这样你可以比较轻松地复制粘贴这里的代码，也方便参考别的项目的代码，并且不容易产生歧义。
 
-用 npm 来安装这个库：
+我们用`npm`来安装这个库：
 
 ```shell
 npm install rdflib --save
@@ -32,11 +33,11 @@ npm install rdflib --save
 const $rdf = require(‘rdflib’)
 ```
 
-## 配置一个存储（Store）
+## 创建存储器
 
 如果我们有了一个存储，然后我们想要存入一个人和他的个人档案（profile），这个人的 WebID 是 URI `https://example.com/alice/card#me`，它是文件 `https://example.com/alice/card` 中的一个局部变量 `me`。
 
-有两种方式来创建 store，比如：
+有两种方式来创建**存储器**，比如：
 
 ```javascript
 const store = new $rdf.IndexedFormula();
@@ -48,135 +49,129 @@ const store = new $rdf.IndexedFormula();
 const store = $rdf.graph();
 ```
 
-## 使用存储
+## 使用存储器
 
-我们来给这人创建一个变量，还有给他的个人档案也创建一个变量。注意到 RDF 中用来表示抽象事物的 URI 后面都有个井号 `#` 还有一个局部 id，就像 HTML 中的锚点。命名节点函数 `doc()` 为文档生成了一个命名节点（NamedNode）。
+首先，我们来给这人创建一个变量，同时给他的个人资料也创建一个变量。你会注意到资源描述框架中用来表示抽象事物的 URI 后面都有个井号 `#` 和一个局部 id，这其实和 HTML 中的超链接是一个道理。然后，我们使用命名节点函数 `doc()` 为文档生成一个命名节点 (NamedNode) 。
 
 ```javascript
 const me = store.sym('https://example.com/alice/card#me');
 const profile = me.doc(); //i.e. store.sym(''https://example.com/alice/card#me')
 ```
 
-现在我们想要使用 vCard（电子名片）这个术语集，我们用一个它的命名空间对象来生成我们要的那些谓词的 URI。
+
+接下来我们想要使用*电子名片* (vCard)，于是我们用一个**命名空间**对象来为电子名片中每一个条目生成正确的谓词URI。
 
 ```javascript
 const VCARD = new $rdf.Namespace(‘http://www.w3.org/2006/vcard/ns#‘);
 ```
 
-如果我们不知道要用哪些词语，各个社区有他们偏好的词语列表，比如其中一个就是 `solid-ui` 的命名空间的列表。
+如果我们不知道要用哪些词语，各个社区有他们偏好的词语列表供我们选择；比如其中一个就是 [`solid-ui`](https://github.com/solid/solid-ui/blob/master/src/ns.js) 的命名空间列表。
 
-We add a name to the store as though it was stored in the profile:
 
-我们天津一个名字到存储里面，把它加到个人档案里。
+
+接着，我们将存储在个人资料中的姓名添加到**存储器**中
 
 ```javascript
 store.add(me, VCARD(‘fn’), “John Bloggs”, profile);
 ```
 
-第三个参数，也就是宾语，严格地说应该填一个 RDF 形式的术语在这，而此处直接填了一个字符串。不过当你填入像 “John Bloggs” 这样的字符串的时候，rdflib 会自动帮你转换成正确形式的内部表示形式。字符串、数字、JavaScript Date 对象都会得到这样的自动转换。
+* 第三个参数，也就是宾语，严格地说应该传入一个**资源描述框架**形式的内容，而上述例子中直接填写了字符串`"John Bloggs"`。但这并不影响使用——当你填入像 `“John Bloggs”`这样的字符串时，`rdflib`会自动在函数内部将其转换成正确的表示形式。除此以外，数字、JavaScript Date 对象也都能够在函数内部被自动转换。
 
-We have some data - one quad - in our store! Let's read it out.
 
-Now to check what name is given to this person specifically in their profile, we do:
 
-我们现在有一些数据 —— 一个四元组 —— 存放在我们的存储里！ 来读取看看吧。
+我们现在有一个**四元组**存放在我们的存储器中！ 让我们将它读取出来。
 
-现在，要查看此人在其个人资料中的姓名，我们可以：
+现在我们要查看此人在他个人资料中的姓名，可以这么做：
 
 ```javascript
 let name = store.any(me, VCARD('name'), null, profile);
 ```
 
-如果您不关心数据可能来自哪个文件，那么您可以省略最后一个参数 —— 实际上内部也是一个对象，因为它是个通配符：
+如果你不关心数据可能来自哪个文件，那么可以省略最后一个参数——实际上这个对象(`profile`)是个通配符：
 
 ```javascript
 let name = store.any(me, VCARD('name'));
 ```
 
-So we have added triples here to a local store. That has just been using it as an in-memory database. Most of the time in a Solid app, we’ll use it as a way of getting and saving data to the web.
+这时，你就可以从你已经加载的文件中提取出所有的姓名了。
 
-然后，您将从已加载到存储的任何文件中提取任何类型为 name 的名称数据。
 
-所以我们在这里添加了三元组到本地存储，把它作为一个内存数据库来使用。在 Solid 应用中，我们将其用作获取和保存数据到 Web 上的主要方式。
 
-### 在存储中用 Turtle
+到此为止，我们已经成功将三元组添加到了本地的**存储器**中，这其实是把**存储器**作为一个内存型数据库来使用。在 Solid 应用中，我们将上述这种方法作为在Web上获取和保存数据的主要方式。
 
-Let’s look at two more local operations. If you have turtle text for some data, you can load it into the store using $rdf.parse:
+### 在存储器中使用 Turtle
 
-让我们看看另外两个操作本地存储的例子，如例如你有一些用 turtle 写的数据，可以使用 `$rdf.parse` 将其加载到存储中：
+接下来让我们一起看看另外两个本地操作**存储器**的例子。
+
+如果你有一些用 turtle 写的数据，可以使用 `$rdf.parse` 将其加载到**存储器**中：
 
 ```javascript
 let text = '<#this>  a  <#Example> .';
 
-let doc = $rdf.sym(‘’https://example.com/alice/card”);
+let doc = $rdf.sym("https://example.com/alice/card");
 let store = $rdf.graph();
-$rdf.parse(text, store, doc.uri, ‘text/turtle’);  // pass base URI
+$rdf.parse(text, store, doc.uri, 'text/turtle');  // pass base URI
 ```
 
-Note that we must specify a document URI, as the store works by keeping track of where each triple belongs.
-
-请注意，我们必须指定一个文档 URI，因为本地存储通过跟踪每个三元组所属的文档来工作。
+请注意，你必须指定一个文档的统一资源定位符 (URI)。这是因为**存储器**通过跟踪每个三元组所属的文档来工作。
 
 ```javascript
 > store.toNT()
 '{<https://example.com/alice/card.ttl#this> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.com/alice/card.ttl#Example> .}'
 ```
 
-We can similarly generate a turtle text from the store. Serialize is the function. You pass it the document (as a NamedNode) we are talking about, and it will just select the triples from that document to be output.
-
-我们可以类似地从本地存储中序列化出 turtle 文本，用 Serialize 函数。把文档作为 名节点（NamedNode）传给它，它会从该文档中选择一些三元组并序列化出来。
+类似地，我们可以用`serialize()`函数从**存储器**中序列化生成turtle文本。只要将文档作为命名节点传给`serialize()`函数，它就会从该文档中选择三元组作为序列化的输出。
 
 ```javascript
 console.log($rdf.serialize(doc, store, aclDoc.uri, 'text/turtle'));
 ```
 
-If you omit the document parameter to serialize, or pass null, then you will get all the triples in the store. This may, if you have used a Fetcher, possibly metadata which the fetcher has stored about the HTTP requests it made in fetching your documents. Which might be interesting... but not what you were expecting.
+如果你省略序列化函数`serialize`的第一个参数`doc`，或者将其设置为`null`，那么你将得到**存储器**中的所有的三元组。这时，如果你使用了提取器，有可能得到一堆提取器中的元数据。这些元数据是提取器在发出HTTP请求获取文档时储存的。这也许很有趣，但最后的结果决不会是你期望的那样。
 
-如果省略要序列化的第一个参数（doc），或传 null，那么您将获得存储中的所有的三元组。如果您使用了提取器（Fetcher），有可能取出来一堆提取器在获取文档时发出的 HTTP 请求的元数据，因为它们也存在存储里了。这可能很有趣，但不会是你所期待的那种效果。
+### 用`match()`来搜索存储器
 
-### 用 match() 来搜索存储
-
-存储的函数 `match(s, p, o, d)` 让你可以搜出任何形式的四元组：
+**存储器**的函数 `match(s, p, o, d)` 让你可以搜索出任何形式的四元组：(The store’s match(s, p, o, d) method allows you to pull out any combination of quads:)
 
 ```javascript
 let quads = store.match(subject, predicate, object, document);
 ```
 
-任一个参数都可以为 null、undefined，这时它表示通配符，即「任意」。返回的四元组是陈述对象（Statement objects）的数组。
+* 任一个参数都可以为 `null`或`undefined`，这时它表示通配符，即「任意」。
+* 返回的四元组是**语句**对象的数组。
 
-Examples:
+一些`match()`函数的调用例子：(Examples:)
 
-|                                     |                                                |
-| ----------------------------------- | ---------------------------------------------- |
-| match（）                           | 给出商店中的所有陈述                           |
-| match（null，null，null，doc）      | 给出文档中的所有语句                           |
-| match（me，null，null，me.doc（）） | 给出在我的个人档案中的，以我作为主语的所有陈述 |
-| match（null，null，me，me.doc（）） | 在我的个人档案中的，以我作为宾语的所有陈述     |
-| match（null，LDP（'contains'））    | 给出谓词为 `ldp：contains` 的所有语句          |
+| `match()`调用方式 | 函数功能描述 |
+| :--: | :--: |
+| `match()`| 给出**存储器**中的所有**语句** |
+| `match(null，null，null，doc)` | 给出文档中的所有**语句** |
+|`match(me，null，null，me.doc())`|给出在我的个人资料中的，以我作为主语的所有**语句**|
+| `match(null，null，me，me.doc())` |在我的个人资料中的，以我作为宾语的所有**语句**|
+| `match(null，LDP('contains'))`   |给出谓词为 `ldp：contains` 的所有**语句**|
 
-一旦你取出了一组语句，通常你还需要获取取出的陈述的属性。
+在你取出一组**语句**之后，你通常还会想要查看这组**语句**的**属性**。**语句**有如下这些**属性**：
 
-|        |                             |
-| ------ | --------------------------- |
+| 属性名称 | 属性描述 |
+| :-:    | :-: |
 | 主语   | 主语的节点                  |
-| 谓词   | 谓词的命名节点（namedNode） |
+| 谓词   | 谓词的命名节点 (namedNode) |
 | 对象   | 主语的节点                  |
-| 为什么 | 文档的命名节点（namedNode） |
+| 为什么 | 文档的命名节点 (namedNode) |
 
-So to find out all the document which mention an old email addess as the object of any statement
+最后一个属性之所以被称为「*为什么*」，是因为它告诉我们为什么我们应该相信它。 在一个简单的互联数据系统中，它是我们读过的一篇文档。在更复杂的系统中，这可能指向推理步骤。它也可以是提取器放入的一个特殊对象，用于把所有HTTP操作的结果存储到Web上。
 
-最后一个属性被称为「为什么」，因为它告诉我们为什么我们应该相信它。 在一个简单的互联数据系统中，它是我们读过的一篇文档。在更复杂的系统中，这可能指向推理步骤。它也可以是提取器放入的一个特殊对象，用于把其 HTTP 请求的结果存储到 Web 上。
 
-因此，如果你要找出所有宾语是某个被 albert 弃用了的邮件地址的文档：
+
+因此，如果你要找出所有<u>宾语是某个被albert弃用了的邮件地址</u>的文档，可以这么做：
 
 ```javascript
 let oldEmail = $rdf.sym('mailto:albert@example.com');
 let outOfDate = store.match(null, null, oldEmail, null).map(st => st.why);
 ```
 
-注意到我们用通配符来加载所有陈述，而只保留询问「为什么」的部分。
+注意：我们用通配符来搜索所有陈述，且只保留询问「为什么」的部分。
 
-因此，如果你想找出所有把 Alice 作为主语或者宾语的陈述，可以这么做：
+因此，如果想找出所有<u>把Alice作为主语或者宾语</u>的语句，你可以这么做：
 
 ```javascript
 let mentions = store
@@ -185,15 +180,15 @@ let mentions = store
   .map(st => st.why);
 ```
 
-注意到用这个方便的写法：
+注意：我们也可以用这个方便的写法：
 
 ```javascript
 let aboutAlice = store.connectedStatements(alice, alice.doc());
 ```
 
-这会加载所有提及到 Alice 的陈述，加上那些提到链接到其他内容的空白节点，它可能会关联到像 Alice 的地址之类的信息。
+这会加载所有提及到Alice的语句，加上那些提到链接到其他内容的空白节点，它们可能会关联到像Alice的地址之类的信息。
 
-假如我们加载了一大堆 LDP 里的文件夹，我们现在想要加载所有文件对，约束是其中一个装在另一个里面：
+假设我们已经加载了一大堆 LDP 里的文件夹，我们现在想要加载所有文件对，约束是其中一个装在另一个里面：
 
 ```javascript
 store.match(null, LDP(‘contains’)).forEach(st => {
@@ -201,48 +196,56 @@ store.match(null, LDP(‘contains’)).forEach(st => {
 });
 ```
 
-We have introduced you to match() after the methods any() and each() because most of the time when you are programming we find those are actually more convenient than using match.
+我们之所以在介绍函数`any()`和`each()`之后才介绍`match()`，是因为我们在编程过程中发现用`any()`和`each()`要比使用`match()`更方便。
 
-### Making new Statements
 
-You can make a new statement using:
+### 生成新的语句
+
+你可以通过以下代码来生成新的语句：
 
 ```javascript
 let st = new $rdf.Statement(me, FOAF(‘name’), “Joe Bloggs”, me.doc());
 ```
 
-or if that's too verbose, you can use a shortcut provided:
+要是你觉得上面的代码太累赘，你可以换一种相对简便的格式：
 
 ```javascript
 let st = $rdf.st(me, FOAF(‘name’), “Joe Bloggs”, me.doc());
 ```
 
-The "st" shortcut exists because you can pass arrays of statements to be deleted or inserted to the UpdateManager's "update()" function as a convenient way of making small changes to the web of data.
+上述代码中`st`这种格式的原理是，你可以将待删除或插入的语句的数组传递给**更新管理器**的`update()`函数，来对Web上的数据进行一些小的修改。
 
-But before we get into using the UpdateManager, let's look at the Fetcher, which is your first level of connection to the web.
+在我们学习使用**更新管理器**之前，不妨先学习一下怎么使用**提取器**。因为**提取器**是网络互连的第一层工具，其次才是**更新管理器**。(But before we get into using the UpdateManager, let's look at the Fetcher, which is your first level of connection to the web.)
 
-## USING THE FETCHER
+## 使用提取器
 
-The Fetcher is a "helper object" which you can attach to a store to allow it to connect to the read-write web of data. The Fetcher handles the HTTP requests, understands MIME types and different formats. It uses the 4th column of the quadstore to track where each triple came from. It can parse data from the net (or elsewhere) and put it in the store. It can generate pretty printed foratted data from the store, the whole store, or the data corresponing to one daa document out there.
+**提取器**是一种辅助对象，它让你能够通过使用**存储器**来连接网络，并进行网络数据的读写。
 
-![the fetcher in architecture](https://raw.githubusercontent.com/linkeddata/rdflib.js/Documentation/diagrams/rdflib_block_diagram.png)
+**提取器**的功能：
 
-Let's set up a store as before.
+* 响应HTTP请求，并且还能适配MIME及其他标准类型。
+* 使用四列的语句存储来记录每一个三元组的来源。
+* 解析网络上（或者其他地方）的数据，并将解析后的数据放置在**存储器**中。
+* 从**存储器**中生成相当美观的格式化数据
+
+![the fetcher in architecture](./rdflib_block_diagram.png)
+
+让我们先像之前那样建立一个**存储器**：
 
 ```javascript
 const store = $rdf.graph();
 const me = store.sym('https://example.com/alice/card#me');
-const profile = me.doc() //    i.e. store.sym(''https://example.com/alice/card#me');
-const VCARD = new $rdf.Namespace(‘http://www.w3.org/2006/vcard/ns#‘);
+const profile = me.doc() //    i.e. store.sym('https://example.com/alice/card#me');
+const VCARD = new $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
 ```
 
-This time, we'll also make a Fetcher for the store. The Fetcher is a helper object which allows you to transfer data to and from the web of data.
+接下来，我们为**存储器**生成一个**提取器**：
 
 ```javascript
-const fetcher =new $rdf Fetcher(store);
+const fetcher = new $rdf Fetcher(store);
 ```
 
-Now let's load the document we have been talking about.
+然后，我们用**提取器**加载文档：
 
 ```javascript
 fetcher.load(profile).then(response => {
@@ -253,28 +256,30 @@ fetcher.load(profile).then(response => {
 });
 ```
 
-Typically when dealing with people, a name and an avatar is useful in the user interface. Let's pick up the picture too, but also make the code a little more robust against people having profiles written using different terms.
+
+
+特别的，当我们在和用户进行交互的时候，用户的姓名和个人头像是非常有用的。下面我们想要通过一种鲁棒的方法来获取用户的姓名和头像，避免我们的代码因为用户的个人资料的内容不同而失效。
 
 ```javascript
 const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
 ```
 
-This way, we can try using this namespace if there is no VCARD name.
+这样我们就能够在没有电子名片时候，尝试上述的命名空间：
 
 ```javascript
 let name = store.any(me, VCARD(‘fn’)) || store.any(me, FOAF(‘name’));
 let picture = store.any(me, VCARD(‘hasPhoto’)) || store.any(me, FOAF(image));
 ```
 
-Or we can track all the names we find instead. The function "each()" returns an array of any field it finds a value for.
+或者我们可以跟踪我们找到的所有姓名。`each()`函数返回它找到的所有满足条件的域的数组。
 
 ```javascript
 let names = store.each(me, VCARD(‘fn’)).concat(store.each(me, FOAF(‘name’)));
 ```
 
-### Fetch Full Code Example
+### 使用提取器的完整例子
 
-Let’s build a little card for someone and set it to get a picture from the net when it can. Let’s use the raw DOM as for the sake of an example -- you translate this into the equivalent in your favorite UI framework.
+让我们为某人生成一个名片，并且让它在有网络链接的时候获取一张图片。我们在这个例子中使用的是最简易的DOM（当然你也可以将其调整成你喜爱的UI框架）。
 
 ```javascript
 const store = $rdf.graph();
@@ -311,7 +316,7 @@ function cardFor (person) {
 }
 ```
 
-Then inside of our web application, we could run the following commands:
+在我们的网页应用中，我们运行下述命令：
 
 ```javascript
 div.appendChild(card(me)); // My card
@@ -321,15 +326,16 @@ fetcher.load(me.doc).then(resp -> {
 });
 ```
 
-This will pull in the user’s profile to make the picture and name for my own card. Then we explicitly pull it in again to find the list of friends. This is reasonable as the fetcher’s `load` method really means “load if you haven’t already” so continues immediately if it has already been fetched. It’s wise to explicitly load the things you need and let the system track what has already been loaded.
+上述命令会加载用户的个人资料来生成名片需要的图片和姓名。接着，我们再一次加载用户数据来获取他的朋友列表。这是挺合理的，因为提取器的`load()`方法意思是“就绪即加载”，所以它一获取到数据，就继续之后的任务。在加载你需要的数据的同时，让系统追踪已经加载完毕的数据是非常明智的。
 
-Then for each of the friends it will load their profile to fill in the name and picture of the friend.
+之后，对于该用户的每一个朋友，提取器都会去加载他的个人资料来获取他的姓名和头像，并将其对应填写在该用户名片的朋友一栏中。
 
-Tip: if you are doing this in the Solid world it is good to make any representation of a thing draggable with the URI of the thing as the dragged URI. That means users of your UI will be able to drag say, people from your window into another solid app, to say add them to a group, give them access to things, and so on. Similarly, if your window real estate would be a logical place for users to drop other things or people, make it a drag target. For devices with drag and drop anyway.
+> 提示：在Solid生态圈中，将页面上可拖动的内容表示成可拖动网址是非常好的。这就意味着你的UI用户能够将人们从你的窗口拖动到另外一个Solid应用中，能够将他们添加到一个组中，能够给他们一定的权限去访问相应内容等等。类似地，如果你的窗口状态的逻辑能够为用户们提供移除操作的话，你也可以把你的页面作为一个拖动的目标。上述这些情景至少对于可以有拖动和移出行为的设备是这样子的。
+>
 
-## Listing Data
+## 罗列数据
 
-Everything in RDF is a thing. We store data about all things in the same sort of way, just using different vocabulary. Suppose you want to list the content of the folder in someone’s solid space. It is very like listing their friends. The namespace for the contents of folders is LDP. So..
+在资源描述框架中，任何内容的表示都是相同的。我们使用大致相同的方式来存储所有数据，仅仅是使用的词汇上有些许区别。假设你想要罗列某人Solid空间中一个文件夹的内容，这就像列举他们的朋友一样简单。文件夹内容的命名空间是互联数据协议。所以…
 
 ```javascript
 const LDP = $rdf.Namespace(‘http://www.w3.org/ns/ldp#>’);
@@ -344,7 +350,7 @@ fetcher.load(folder).then(() => {
 });
 ```
 
-The Solid pods give you a bit of metadata about each contained file, including size and type. For example we can look at the RDF type ldp:Container to see when we can list something as a subfolder:
+Solid容器给了你一些元数据，这些元数据中记录了它所包含的每一个文件的大小和类型。例如，我们可以通过查看资源描述框架的类型来知道我们什么时候可以把对应内容列成子目录。
 
 ```javascript
 function list(folder, indent) {
@@ -364,16 +370,17 @@ function list(folder, indent) {
 list(rdf.sym(‘https://alice.example.com/Public/’));
 ```
 
-The results will come asynchronously. If we were building a UI, each would get slotted into the right place.
+查询的结果是异步返回的。如果我们之前正在建立一个用户界面，每一个返回的结果都会到达正确的位置。
 
-## UPDATE: USING UPDATEMANAGER TO UPDATE THE WEB
+## 更新：使用更新管理器来更新网页
 
-The UpdateManager is another helper object for the store. Just as the Fetcher allows the store to read and write resources from the web, generally a resource (file) at a time, the UpdateManager object allows the store to send small changes to the data web. It also allows the web app to subscribe to a stream of changes that other people have made, and so keep all places wher the data is displayed in sync.
+更新管理器是**存储器**的另一个辅助对象。就像提取器驱动**存储器**去读写网页上的资源那样（大体上是一次一个文件），更新管理器对象驱动**存储器**来对网页上的数据进行小的修改。同样地，更新管理器让网页应用订阅他人修改操作的流，并且让存储在不同服务器上的数据保持一致。
 
 ```javascript
 const store = $rdf.graph();
 const fetcher = new $rdf.Fetcher(store);
 const updater = new $rdf.UpdateManager(store);
+
 // ...
 
 function setName(person, name, doc) {
@@ -386,12 +393,14 @@ function setName(person, name, doc) {
 }
 ```
 
-The first parameter to update() is the array of statements to be deleted. If it is empty then update() just adds data to the store. (Note for this the user only needs Append priviledges, not full Write). The second parameter to update() is the array of statements to be deleted.
+* 传递给`update()`函数的第一个参数是待删除语句的数组。当第一个参数为空数组时，`update()`函数仅完成添加数据的操作。这里需要注意的是，用户只需要附加数据的权限，而不需要完全的写入权限。
+
+* 传递给`update()`函数的第二个参数是待插入语句的数组。
 
 ```javascript
 function modifyName(person, name, doc) {
   let ins = $rdf.st(person, VCARD('fn'), name, doc);
-  let del = store.statementsMatching(person, VCARD('fn'), null, doc); // null is wildcard
+  let del = store.statementsMatching(person, VCARD('fn'), null, doc); // null是通配符
   updater.update(del, ins, (uri, ok, message, response) => {
     if (ok) console.log('Name changed to ' + name);
     else alert(message);
@@ -399,23 +408,23 @@ function modifyName(person, name, doc) {
 }
 ```
 
-So in this second case, the function will first find any statements which give the name of the person. It then asked update to in one operation remove the old statements (quads) from the store, and add the new one.
+所以，在上述例子中，函数`modefiyName()`会先找到给定姓名`name`的人的所有语句，然后使用`update()`将旧的语句从存储中删去，并添加新设置的语句。在这个例子中，实际效果就是更改了文档中人的姓名。
 
-### 409 Conflict
+### 409冲突
 
-Note that update operation (which does a PATCH operation) is specified by solid to be atomic, in that it will either complete both deletion and insertion, or it will fail and do nothing. If the server is not able to delete the statements, for example because someone else has just deleted them first, then the update must fail with a 409 conflict. In that case, the web app will typically beep or turn pink and back out the user's attempted change in the UI.
+需要注意的是，更新操作（它进行了HTTP的PATCH操作）在Solid中被规定为原子操作。也就是说，更新操作要么完成删除和插入语句的操作，要么就是失败或者什么也没做。当服务器无法删去一些语句的时候，更新操作会失败且伴随409冲突。比如说，服务器在要删除一些语句的时候，有其他人已经先于服务器删除了那些语句，这时候就会引起更新失败和409冲突。在这类情况下，网页应用通常会发出“嘟”的一声，或者界面会变成粉红色，然后退出用户尝试更新操作的页面。
 
-## DELETING RESOURCES
+## 删除资源
 
-To delete triples, or any combination of them, from a resource, use the UpdateManager above. If you want to delete whole resources, then you use the HTTP DELETE method.
+你可以使用上述介绍的更新管理器来删除数据源中的三元组或者三元组的组合。如果你想删除整个数据源，你可以使用HTTP的`DELETE`方法。
 
 ```javascript
 store.fetcher.webOperation('DELETE', doc.uri).then(/*...*/);
 ```
 
-### Example: recursive delete of Solid folders
+### 递归地删除 Solid 文件夹
 
-Like in Unix, you can't (currently, 2018) delete a folder unless it is empty. So if you want to, you have to delete everything in it first. Here is your rm -r function to complete this little guide.
+和Unix系统一样，你不能（目前是2018年）删除一个非空的文件夹。所以，如果你想要删除一个文件夹，你必须先将该目录下所有的内容删去。我们在这里介绍一个模拟Unix中`rm -r`功能的函数`deleteRecursive()`。
 
 ```javascript
 function deleteRecursive(store, folder) {
@@ -445,33 +454,33 @@ function deleteRecursive(store, folder) {
 }
 ```
 
-Use with care..
+请小心使用哦。
 
 ## 跟踪变动
 
-Using the UpdateManager above we made an app which sends changes to the data web whenever the UI changes. Let's also make it so the UI changes whenever the data web changes. The function we use is:
+使用上述介绍的更新管理器，我们能制作这样一个网页应用，只要它的用户界面发生变动，它就会把这些变动发送给数据源。我们不妨让它在数据源变动的时候，也能相应地改变用户界面。实现这个功能的函数如下：
 
 ```javascript
 updater.addDownstreamChangeListener(doc, refreshFunction);
 ```
 
-It will sign up for changes by opening a websocket with the server. When a message comes from the server that the document has changed, it will reload the docuemnt into the store. It will deal with you calling it for the smae docuemnt from different places. It will ignore changes whioch you have made yourself with updater.update(). So all you have to do is provide a function which will sync changes in the store into the UI.
+函数`addDownstreamChangeListener()`通过服务器打开一个`websocket`来发送和接收数据变动。当它接收到来自服务器的消息时，如果消息表明文档已经发生改变，它就会将文档重载进**存储器**中。即使你在很多地方都加载了同一个文档也没关系，它会帮你重载这些地方的文档。还有，它会忽略你自己用`updater.update()`做出的一些本地的变更。所以，你所要做的就是提供一个可以将存储中的变更同步到用户界面的函数，这样你就能够跟踪数据源的变动来相应地调整用户界面的内容了。
 
-If the user isn't editing the UI, just looking at it, you can more or less get away with
+下面我们假设一个场景：用户并不在编辑你的用户界面，而只是在盯着这个界面看。你可以避免使用下面这段代码来刷新你的整个页面。
 
 ```javascript
 const div = dom.createElement('div')
-  function refresh () { // Not recommended
-    div.innerHTML = ''
-    store.each(subject, predicate, null, doc).forEach(obj) {
-      div.appendChild(renderOneObject(obj))
-    }
+function refresh () { // 不推荐
+  div.innerHTML = ''
+  store.each(subject, predicate, null, doc).forEach(obj) {
+    div.appendChild(renderOneObject(obj))
   }
-  refresh()
-  updater.addDownstreamChangeListener(doc, refresh)
+}
+refresh()
+updater.addDownstreamChangeListener(doc, refresh)
 ```
 
-or words to that effect. This will cause the div to be repainted. That isn't as slick as writing a refresh function which adjusts the UI just deletiung old things and inserting new ones. That means the user can happily be looking at or editing one part while other parts change.
+因为上述代码会导致这个DIV组件被重新渲染。如果有一个过程并不像对界面内容进行增删操作的刷新函数那么华丽，那就意味着用户可以在编辑某一部分页面的时候，看到另一部分的页面内容发生改变。
 
 ```javascript
 mugshotDiv = div.appendChild(dom.createElement('div'));
@@ -494,7 +503,7 @@ syncMugshots();
 updater.addDownstreamChangeListener(doc, syncMugshots);
 ```
 
-This uses a handy function syncTableToArray, whcih comes with solid-ui, but is include here to be complete. Also, to encourage you to make UI which syncs in both directions, even if it isn't built into the framework you are using. So fiund a way that rdflib fits naturally with your favorite UI framework, if you have one. See [the Inrupt Solid documentation](https://solid.inrupt.com/docs) for some hints about using specific frameworks.
+在上面的代码中，我们使用了一个简便的函数`syncTableToArray()`。它来自`solid-ui`命名空间，以下代码是它的具体实现。我们非常支持你制作出双向同步的用户界面，即使你可能并没有使用你常用的框架。所以，有能力的话，你可以用你最喜爱的框架来和`rdflib`相结合使用。如果在这个过程中，你觉得有困难，你可以参考[Inrupt的Solid文档](https://solid.inrupt.com/docs)来学习怎样在具体的UI框架中使用`rdflib`。
 
 ```javascript
 function syncTableToArray(table, things, createNewRow) {
@@ -541,4 +550,4 @@ function syncTableToArray(table, things, createNewRow) {
 
 ## 结论
 
-We've looked at how to interact directly with the store as a local in-memory triple store, and we have looked at how to load it and save it, web resource at a time. We see how it ina away acts as a local in-memory cache of the big wide web of linked data, allowing a user-interface to keep in sync with the state of the data web. As developers we can now write code which will allow users to explore, create, modify and link together a web of linked data which can grow to encompass more and more domains, different applications.
+到此为止，我们已经知道了怎样直接和**存储器**交互，并将它作为一个本地的内存型数据库使用；并且我们也了解了怎样用**存储器**去存取网页数据；我们也理解了它是怎样作为一个巨大互联网的本地缓存来保持用户层次的数据一致性。而作为开发者，我们现在已经可以编程来让用户们去探索、创建、修改以及连接网页上的互联数据。最后，我们相信Solid平台上将来会包含越来越多的域名，也将会诞生各式各样的应用。
