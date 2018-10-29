@@ -130,7 +130,7 @@ console.log($rdf.serialize(doc, store, aclDoc.uri, 'text/turtle'));
 
 ### 用`match()`来搜索存储器
 
-**存储器**的函数 `match(s, p, o, d)` 让你可以搜索出任何形式的四元组：(The store’s match(s, p, o, d) method allows you to pull out any combination of quads:)
+**存储器**的函数 `match(s, p, o, d)` 让你可以搜索出任何形式的四元组：
 
 ```javascript
 let quads = store.match(subject, predicate, object, document);
@@ -215,7 +215,7 @@ let st = $rdf.st(me, FOAF(‘name’), “Joe Bloggs”, me.doc());
 
 上述代码中`st`这种格式的原理是，你可以将待删除或插入的语句的数组传递给**更新管理器**的`update()`函数，来对Web上的数据进行一些小的修改。
 
-在我们学习使用**更新管理器**之前，不妨先学习一下怎么使用**提取器**。因为**提取器**是网络互连的第一层工具，其次才是**更新管理器**。(But before we get into using the UpdateManager, let's look at the Fetcher, which is your first level of connection to the web.)
+在我们学习使用**更新管理器**之前，不妨先学习一下怎么使用**提取器**。因为**提取器**是网络互连的第一层工具，其次才是**更新管理器**。
 
 ## 使用提取器
 
