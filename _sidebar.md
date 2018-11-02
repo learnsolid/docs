@@ -12,4 +12,7 @@
   - [基于 Angular 编写 Solid 程序](application/angular)
 - [运行一个 Solid 服务器](server/server)
   - [安装并运行一个 NodeJS Solid 服务器](server/node)
+- [访问权限控制](acl/acl)
+  - [Web ACL](acl/wac)
+  - [同源策略](acl/same-origin)
 - [联系 Solid 中文网团队](contact)
