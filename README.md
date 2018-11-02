@@ -12,10 +12,12 @@
 
 # 学习路径
 
-1. Solid 规范介绍
-2. Linked Data 介绍
-3. 使用 Turtle 表现 Linked Data
-4. 操作 Linked Data
-5. 你是个面向未来的开发者吗？ 
+1. [认识 Solid](./guides/basic)
+2. [Solid 规范介绍](./guides/spec)
+3. [Linked Data 介绍](./linkeddata/fundamentals)
+4. [使用 Turtle 表现 Linked Data](./linkeddata/turtle)
+5. [操作 Linked Data](./linkeddata/rdflib)
+
+# 你是个面向未来的开发者吗？
 
 在过去，网页是由很多没有任何编程背景的人创建的，这也是我们的长期目标，而且是关于一个 New Web 的目标。在这其中作为普通人的大众是最重要的，他们会促进 Solid 的实用性。我们还需要做很多工作来达到这个目标，但是我们相信只要跟随这个理念前行，我们终将抵达终点。
