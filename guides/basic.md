@@ -27,3 +27,7 @@
 为了证明**你拥有你的数据**，你需要拥有一个身份。在 Solid 中，Pod 就是证明你是谁的一个工具（不用依靠任何第三方公司）。所以在未来， "使用微信登录"、“使用微博登录” 会变成 “使用 Solid Pod 登录”。
 
 ![id](https://solid.inrupt.com/sites/default/files/2018-09/How%20It%20Works-3%402x.png)
+
+## 获取 Pod
+
+如果你想获取一个 Solid Pod，请 [点击这里](https://solid.authing.cn) 获取。

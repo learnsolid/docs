@@ -18,6 +18,10 @@
 4. [使用 Turtle 表现 Linked Data](./linkeddata/turtle)
 5. [操作 Linked Data](./linkeddata/rdflib)
 
+## 获取 Pod
+
+如果你想获取一个 Solid Pod，请 [点击这里](https://solid.authing.cn) 获取。
+
 # 你是个面向未来的开发者吗？
 
 在过去，网页是由很多没有任何编程背景的人创建的，这也是我们的长期目标，而且是关于一个 New Web 的目标。在这其中作为普通人的大众是最重要的，他们会促进 Solid 的实用性。我们还需要做很多工作来达到这个目标，但是我们相信只要跟随这个理念前行，我们终将抵达终点。
