@@ -1,168 +1,163 @@
-Notes
+# 为互联网应用授权：背景知识
 
-# Authorizing Web Apps: Background
-This short article is a very much simplified backgrounder on the protocols
-which web browser manufacturers have implemented to control access to data by web apps on different web sites.
+> 注意，这是一篇[随笔](https://github.com/solid/web-access-control-spec/blob/master/Background.md)
 
-## Background
+这篇短文非常简要地为大家阐述了：浏览器制造商是如何实现一套协议，控制来自不同网站的互联网应用访问数据的权限。
 
-*Ted Nelson talks about the two gods of Literature, the reader and the writer. They are each invincible: the writer can write whatever they want, and the reader can if they chose read nothing the writer has written. Here we have though three gods, the reader, the writer and the spy, and none of them are omnipotent.*
+## 背景
 
-The assumption that a web browser makes is that whenever the user is using a web app, that the web app is trying to attack the user. The web app is by default not trusted, and so the browser constrains the web app to be limited in anything it can do, and also provides the web app with limited error messages or information about the way it is being disabled. This is therefore a very hostile environment for which to program, unless the app is something rather trivial which does not access data on the web.
+> Ted Nelson 曾经谈过文学二神 —— 读者和作家，它们都是无敌的：作家可以想写什么就些什么，而读者可以选择什么也不读。不过现在我们有三个神，读者、作家还有中间人，它们任一方都不是无所不能的。
 
-## Cross site scripting attacks
+浏览器一直在做的假设是，任何时候只要用户开始使用互联网应用，这个应用就开始尝试攻击这个用户，也就是说互联网应用是默认不可信的，浏览器在它们可能做的任何事情上都加了限制，而且也对互联网应用开发者提供有限的关于这些限制的报错信息。因此这是一个对程序非常不友善的环境，触发这个程序是一个很简单的不访问任何互联网数据的程序。
 
-The original attack which caused a lot of the current design of the browser is a cross-site scripting attack. In this sort of attack, a malicious person Mallory sends a normal user Alice for example an email with a link to Mallory’ web site. Alice follows the link and loads the web page M. We allow JavaScript scripts to run in any web page by default, and M has a script which runs on Alice’s machine, accesses some data which Alice has access to, and then secretly sends the data back to some system Mallory controls. The private data maybe accessed by the script in various ways. One way is that the computer Alice is using may be inside a firewall which gives her implicit access, to say a webcam in her house, or a journal library in her university. It may be done, then, without any interaction with Alice, or it can also be done by asking her to log in to a system to get the script some credentials. Web site M could be a fake version of her bank, B, and ask her to authenticate to the bank, or to her social network, on some pretense. The data can typically be returned to Mallory say be encoding it in a URL on a site M controls and going a GET. There are many variations of the Cross Site Scripting (XSS) attack, but that is the general idea.
+## 跨站脚本攻击（XSS）
 
-## Cross-Origin Resource Sharing "CORS"
+最早迫使浏览器采用不信任互联网应用这个设计思想的攻击方式，就是跨站点脚本攻击。在这种攻击中，一个恶意的人员**刀疤哥**会向普通用户**爱丽丝** 发送一封电子邮件，邮件里有一个指向**刀疤哥**的网站的链接。**爱丽丝**毫无防备心地点击链接，让浏览器加载网页**刀疤网**，浏览器允许 JavaScript 程序默认在任何网页上运行，因此**刀疤网**上会有一个 JS 程序在**爱丽丝**的设备上运行，访问**爱丽丝**设备上她能访问的一些数据，然后秘密发送数据到**刀疤哥**的服务器上。
 
-The first impulse of a browser developer may have been to just prevent a web page script to do any web access at all, but clearly they need to be able to do network access. For example, a bank needs to load a script which can display a person's
-bank accounts by going back to the server B for more data about different accounts at different dates. Clearly that had to be enabled. But Mallory had to be blocked. This let to the Same Origin Policy that so long as a script running in a web page which came from the same internet domain name (like www.bankofamerica.com) then the script could interact as much as it liked with any server address in the same domain. The protocol and domain part of the URI aRe known as the Origin. Hence, Same Origin Policy (SOP). In general all data from a server Origin and form any script it runs is kept separate from any data from any other Origin. This allows banks to work pretty well.
+程序可以通过各种方式访问 ​​**爱丽丝**的私有数据。一种方式是**爱丽丝**正在使用的计算机可能位于防火墙内，该防火墙允许她进行隐式访问她家中的网络摄像头或她大学的期刊库等等资源。之所以说隐式访问，是因为这些访问可以在没有与**爱丽丝**进行任何交互的情况下完成，或者也可以通过要求她登录系统以让程序获得一些凭据（例如 Cookie）来完成。网站**刀疤网**也可能是她使用的某个银行的官网的虚假版本，一个钓鱼网站，它要求她以某种借口向银行或社交网络进行身份验证。这个钓鱼网站将数据返回给**刀疤哥**的方法有很多，例如将窃取到的数据放到**刀疤网**的 URL 后面，发送 GET 请求，这样**刀疤网**的服务器就能拿到数据。跨站脚本攻击可能有很多变种，这里说的是最一般的思路。
 
-Were there any use cases where the SOP does now work? Well, yes — anything which relies on a script being able to access other domains. One example is a service which provides for example a JavaScript program to validate, test, or assess another web page: it can’t access the data in the page to do its job.
-Another example is a data mashup. When a large amount of open public data started to become available from governments and so on, there was a flourishing of sites which loaded data from many different sites and provide a “mashup” of the data — a combined visualization of data from many sources which would typically l	was to insights that you would not get from one data source alone. A typical client-based data mashup site in fact does not work nowadays work any more.
+## 跨域资源共享（CORS）
 
-What could be done? The browser manufacturers implemented some hooks to allow data to be shared across different origins, and called it Cross Origin Resource Sharing, or CORS. The core problem was — how in the browser to distinguish between data like a domestic webcam which was private, and open government data which was public? Not being able to change the webcam, they decided to make the data publishers change. They required that they add special CORS headers to their HTTP responses for any data which was public.
+浏览器开发者的第一个冲动可能就是完全阻止 JavaScript 程序进行任何互联网访问，这样它们就没法偷偷上传用户数据了。但显然互联网应用的开发者需要他们的 JS 程序能够进行网络访问。例如，银行肯定需要加载一个程序，通过上传用户输入的信息来向银行服务器请求关于这个用户的不同日期、不同账户的更多数据。显然必须允许上传数据才能实现这些交互。
 
-```
+但我们不会允许这些数据被上传到**刀疤哥**的服务器上，这就是同源策略，只要程序在同一个互联网域名（如 http://www.icbc.com.cn ）的网页中运行，那么程序可以与这个域名下的任何服务器地址进行交互。URI 中的协议和域名就组成了我们所说的「源」。因此同源政策（Same Origin Policy, SOP）说的就是，来自某一个服务器「源」的数据，以及来自这个服务器的程序的数据，都与来自任何其他源的任何数据分开。这使银行的程序能够很好地运作，又不会暴露隐私。
+
+有什么场景之中同源策略是不可用吗？这还是有的，任何需要程序去访问其他域名下的数据的场景都会被同源策略阻碍到。例如如果有一个网站想提供一个 JavaScript 程序来检验、测试或者仅仅访问另一个网页，那么它没法访问那个网站上的数据，也就没法达到它的设计目的。
+
+另一个例子是数据融合。当政府开始公开大量的开放公共数据时，有一些网站会开始涌现，这些网站从许多不同的开放数据站点加载数据并提供数据的「融合」—— 组合许多不同来源的数据，并提供可视化，从而让用户享受到单一数据源所不能提供的洞察力。但实际上，典型的纯前端的数据融合网站现在已经无法工作了。
+
+那么有什么替代方案？浏览器制造商实现了一些钩子以允许数据在不同的源上共享，并称之为跨域资源共享（CORS）。核心问题是 —— 如何在浏览器中区分数据，区分私人的网络摄像头数据和公开的政府开放数据？我们无法改变网络摄像头，但我们可以改变开放数据发布者。浏览器制造商现在要求开放数据发布者在 HTTP 响应中为任何完全开放的数据添加特殊的 CORS 头：
+
+```http-header
 Access-control-allow-Origin: *
 ```
-At the same time they added a feature to allow the data publisher to specify other a limited set of other origins which would be allowed access. This makes running a bank easier if also the credit card company code can access your customers data.
-```
+
+同时他们添加了一项功能，允许数据发布者指定有限的其他可信来源，这些来源将被允许访问数据发布者产生的数据。
+
+例如银行可以允许可信的信用卡公司的程序访问银行的源下的用户数据，这可以使得运营银行变得更容易：
+
+```http-header
 Access-control-allow-Origin: credit card company.example.com
 ```
-This meant that anyone publishing public data has to add
 
-```
+这意味着发布公开数据的人需要在他们的任何 HTTP 响应里加上
+
+```http-header
 Access-control-allow-Origin: *
 ```
-in any response.  This meant a huge amount of work for random open data publishers
-all over the web, an effort which in many cases for many reasonable reasons was not done, leaving the data available to browsers, but unavailable to web apps.
 
-The browser actually looks for these headers not on the request itself, but in
-on a "Pre-flight" OPTIONS request which is inserted before the main request.  So while the developer may see in the browser console only the main request, the number of round trips has in fact increased.
+这意味着给互联网上随机的开放数据者带来大量的工作量，可能这些开放数据提供方会因为各种原因没法给所有响应都加上这一条响应头。这使得他们的数据只能被浏览器直接访问，而没法被互联网应用利用。
 
-### Header blocking
+浏览器事实上不直接查看这些响应头，而是在一个前驱（Pre-flight）的 OPTIONS 请求里查看，这个请求会自动插入到其他主要的请求之前。所以当开发者在开发者工具里看到主要的请求时，其实已经有几轮请求发生了。
 
-As well as blocking the data, the CORS system blocks headers from the server to the web app.
-To prevent this this, the server must send another  [header](https://www.w3.org/TR/cors/#access-control-allow-headers-response-header):
-```
+### 响应头拦截
+
+除了阻止访问数据以外，CORS 系统还会阻止不同源的服务器的响应头发送给互联网应用。如果不想被阻止，服务器必须加上另一个[响应头](https://www.w3.org/TR/cors/#access-control-allow-headers-response-header):
+
+```http-header
 Access-Control-Allow-Headers: Authorization, User, Location, Link, Vary, Last-Modified, ETag, Accept-Patch, Accept-Post, Updates-Via, Allow, WAC-Allow, Content-Length, WWW-Authenticate
 ```
-This must include things like the Link: header which are normal headers blocked by the browser, and also any new headers the app and serve are using for any purpose.
 
-### Method blocking
+上述的响应头里必须包含一些东西，比如「Link」。这些是一般会被浏览器阻止的响应头，你也可以把任何其他的应用和服务器需要因其他目的而是用的响应头加进去。
 
-### Example
+### HTTP 方法拦截
 
-One solid server does CORS [this way](https://github.com/solid/node-solid-server/blob/master/lib/create-app.js#L26)
+作为习题留给读者思考。
 
-## The CORS twist
+### 例子
 
-The twist is that in fact the designers of CORS make it even more difficult.
+官方的示例 SoLiD 服务器通过[这种方式](https://github.com/solid/node-solid-server/blob/9b627e47ee191ea7b2a8f1710eb6a8a952e5557e/lib/create-app.js#L27)来允许跨域资源访问。
 
-There was a feeling, I understand, that allowing the publishers to simply put `ACAO: *`
-header on their stuff was too easy.  It was felt it was a "footgun", something it would be
-too easy for users to shoot themselves in the foot with.
-The "users" here are of course not ordinary users, they are system managers configuring
-web servers.  The concern was that system managers would find that access to their data
-was being blocked, and they would just throw on such a  header everywhere, even where the data
-was in fact not public. Where, for example, they provided different versions of a page to
-different users, it was important to preserve the wall between the users, and they would be tempted
-to mak it with  `ACAO: *` which would mean it would be accessible
+## 对 CORS 的调整
 
-So they blocked the use  `ACAO: *` whenever the incoming request carries credential information.
-Whenever the user is "logged in", if you like, and using their logged in identity.
+这里我们要说的调整是：CORS 的设计者事实上故意使其变得更加难使用。
 
-But of course there are times when a system needs to access private user-specific information
-from another site, just for the works of a bank.
-For the case that the client is using credentials, *the access would only be allowed
-if the Access-Control-Allow-Origin header specified explicitly the origin of the request exactly*.
+有人会一种感觉，我明白，就是如果允许数据发布者简单地把 `ACAO：*` 加在在他们发布的内容上，这会是一个，让
+用户很容易自废武功的设计。
 
-The trouble is that the HTTPS: world is now divided into two webs, one in which credentials are passed, on in which they are not.  A problem with that is that if you are not an end user top level application, but in fact
-some piece of middleware, a library within a code library, you just call the browser to do the web
-operation, and the browser used to do password, or TLS, login if necessary.  The middleware
-code is not aware
+这里的「用户」当然不是普通用户，而是指配置网络服务器的系统管理员。我们担心的是系统管理员会发现浏览器封锁了对其数据的访问，为了解决这个问题，他们只会在任何地方都加上这个响应头，即使某些数据实际上并不应该被公开。例如，他们提供了不同版本的页面给不同的用户，此时保持用户之间的数据隔离是很重要的，但他们会受到诱惑用`ACAO：*`来把所有数据都标识成可以访问的。
 
+因此，只要传入的请求中带有用户凭据信息，浏览器就会阻止服务器使用 `ACAO：*`。
+每当用户「登录」时，如果你愿意，明确地使用他们登录时上传的身份信息。
 
-This meant that if you had a server with completely public data, like open government data,
-which you wanted any code to be able to access, the rule of thumb among system managers
-was that you should always echo back to any origin the same origin header. Instead of
+但是，有时系统需要访问来自另一个源的用户私有的信息，例如前述的银行的例子。对于这种使用凭据的情况，_只允许访问 Access-Control-Allow-Origin 响应头中明确指定了的源_。
 
-```
+麻烦的是 HTTPS：互联网现在分为两个网络，一个是我们用来登录和传递凭证的网络，而另一个是低安全性的网络。问题在于，如果你开发的不是最终用户顶级应用程序，而是一个中间件，一个代码库，你只能调用浏览器来做网络操作，以及用于处理密码或 TLS 的浏览器 API，必要时得进行登录。中间件的代码没法知道整个过程。
+
+这意味着，如果你的服务器发布的是完全公开的数据，例如政府开放数据，你希望任何代码都能够访问你的数据，系统管理员之间的经验法则是你应该总是回应任何请求头相同的源。相比于用这个：
+
+```http-header
 Access-control-allow-origin: *
 ```
-all public data servers should send
 
-```
+所有的开放数据服务器应该发送这个：
+
+```http-header
 Access-control-allow-origin: $(RECEIVED_ORIGIN)
 ```
-Where  `$(RECEIVED_ORIGIN)` is replaced with the actual value of the Origin header
-on the request.
 
-To the extent that adding a fixed field to all public data servers was a pain,
-this was more of a pain.  It was a step up, requiring active code rather than a simple configuration change -- A lot to ask of every publisher of open data on the net.
+此处的 `$(RECEIVED_ORIGIN)` 就用请求头中的源来替换。
 
- There was a campaign to explain this to data publishers, and code snippets were widely distributed.  In fact there is with Apache a way of doing this using
- internal environment variables. [@@ref]
+这可能会比向所有公共数据服务器添加固定字段更复杂。不过这是一个进步，可以让代码来干活，而不是简单地让人去改改配置 —— 这需要让每一个开放数据发布者都配合。
 
-Would not a better design have been to set up a static header such as
- ```
- Access-control-allow-origin: PUBLIC_AND_UNCUSTOMIZED
- ```
-where the system manager would have no one else to blame for sing it on any resource
-which was secret, or was customized with a user's identity?  One might of thought.
-But that is not how CORS was done.
+要向数据发布者解释清楚这些东西简直像打一场战役，战役的结果是到处都可以搜到这些代码片段。事实上 Apache 都把这个搞成了一个内部的环境变量[@@ref]
 
-So, data publishers of the world went about putting CORS Origin reflector code
-in their servers.
+难道没有更好的设计来设置静态标头吗，例如
 
-But once you are using the origin reflector technique, it becomes essential to allow add the `Origin` to
-the `Vary:` header is you have one, or, if not add a new
+```
+Access-control-allow-origin: PUBLIC_AND_UNCUSTOMIZED
+```
+
+这样系统管理员就不会把一些私密的东西随便暴露出去了，或者也可以用用户的身份来定制化？可能有的人会这么想。不过这就是现在 CORS 实现的方式。
+
+所以，世界上的数据发布者都开始把 CORS 源配置通过反射添加到响应头里了。
+
+但一旦你要使用反射式加源的响应头，很关键的一点事允许把 `Origin` 加到 `Vary:` 响应头里，如果你有 `Vary:` 的话。如果没有，就加上一个：
+
 ```
 Vary: Origin
 ```
-to every outgoing response which has a reflected ACAO header.
-Otherwise, this is the failure mode:
 
-- A script on site A asks for the public data
-- The server responds with the data with ACAO: A header
-- The browser caches that response
-- The user uses a different app on site B to look at the same data
-- The browser uses the cached copy -- but the origin A on it does not match the requesting site B.
-- The browser silently blocks the the request to the puzzlement of user and developer.
+到每一个通过反射来配置 ACAO 的响应头里。
 
-So in a properly running CORS-based system, the server sends the Vary: Origin header, and forces the browser to keep a different copy of the data for every web app which asks for it, which is very ironic, given that it may be completely public data.
+不然的话，这里有一个失败的例子：
 
-The CORS design most go down in history as the worst piece of design in the whole web. But that is the background against which now those designing a system such as Solid now have to create a system which will be immune to XSS attacks, data will be
-public and private under user's control, and web apps are be deemed trustworthy by various different social processes.
+- 站点A上的程序向服务器请求公共开放数据
+- 服务器使用 ACAO 响应头头响应数据
+- 浏览器缓存该响应
+- 用户使用站点B上的其他程序查看相同的数据
+- 浏览器使用缓存副本，但其上的源A与请求站点B不匹配。
+- 浏览器以静默方式阻止了请求，用户和开发者感到十分费解
 
-## Epilog: A second CORS twist
+因此，在正常运行的基于 CORS 的系统中，服务器发送 Vary：Origin 响应头，并强制浏览器为每个请求它的 Web 应用程序保留不同的数据副本，这非常具有讽刺意味，因为这些数据副本可能是完全公开的数据，不需要做任何隐私考量。
 
-The second twist with CORS is the at the browser doesn't even actually implement the CORS with a twist
-algorithm completely.
+CORS设计在历史上大多数时候都是整个网络中最糟糕的设计。但现在，那些设计像 Solid 这样的系统的人必须创建一个不受 XSS 攻击影响的系统，数据将是在用户的控制下完全对外公开或者完全对外不可见，并且 Web 应用程序将被各种不同的社交流程视为可信赖的。
 
-https://lists.w3.org/Archives/Public/www-archive/2017Aug/0003.html
+## 后记: 对CORS的第二次调整
+
+对CORS的第二次调整是在浏览器[还没完全实现完第一次调整的时候发生的](
+https://lists.w3.org/Archives/Public/www-archive/2017Aug/0003.html)。
 
 Notwithstanding issues with the design of CORS, Chrome doesn’t in fact
 do it properly.
 
 If you request the same resource first from one origin and then from
 another, it serves the cached version, which then fails cord because the
- Origin and access-control-allow-origin
-headers don’t match.  This even when the returned headers have “Vary:
+Origin and access-control-allow-origin
+headers don’t match. This even when the returned headers have “Vary:
 Origin”, which should prevent that same cached version being reused for
 a different origin.
-That was with Chrome Version 59.0.3071.115 (Official Build) (64-bit)
 
-It seems also that Firefox showed the same behavior for  in 2018-07
+尽管 CORS 的设计存在问题，但 Chrome 实际上也并没有正确地实现它。如果你首先从一个源请求相同的资源，然后从另一个源请求相同的资源，浏览器将尝试提供缓存版本，然后由于 Origin 和`access-control-allow-origin` 响应头不匹配而失败。即使返回的响应头具有 `Vary：Origin`，这也应该防止相同的缓存版本被重用于不同的源。
 
-## References
+> 问题出现于 Chrome Version 59.0.3071.115 (Official Build) (64-bit)
 
-- [WXSS] [Wikipedia, "Cross-site scripting"](https://en.wikipedia.org/wiki/Cross-site_scripting)
-- [CORS] [Cross-Origin Resource Sharing
-W3C Recommendation](https://www.w3.org/TR/cors/)  16 January 2014
-- [WCORS][Cross-origin resource sharing](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
-- [WSOP] [Wikipedia, "
-Same-origin policy"](https://en.wikipedia.org/wiki/Same-origin_policy)
-- [W3C-SOP][W3C Wiki, Same Origin Policy](https://www.w3.org/Security/wiki/Same_Origin_Policy)
+> 火狐在 2018-07 也出了同样的问题。
+
+## 参考文献
+
+- [WXSS][wikipedia, "cross-site scripting"](https://en.wikipedia.org/wiki/Cross-site_scripting)
+- [CORS][cross-origin resource sharing w3c recommendation](https://www.w3.org/TR/cors/) 16 January 2014
+- [WCORS][cross-origin resource sharing](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
+- [WSOP][wikipedia, " same-origin policy"](https://en.wikipedia.org/wiki/Same-origin_policy)
+- [W3C-SOP][w3c wiki, same origin policy](https://www.w3.org/Security/wiki/Same_Origin_Policy)
