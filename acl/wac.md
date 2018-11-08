@@ -13,15 +13,15 @@ Next](https://www.w3.org/community/ldpnext/)）这类系统服务，例如
 ## 大纲
 
 - [简介](#简介)
-- [Access Control List Resources](#access-control-list-resources)
+- [访问控制列表资源](#访问控制列表资源)
 
-  - [Containers and Inherited ACLs](#containers-and-inherited-acls)
-  - [Individual Resource ACLs](#individual-resource-acls)
-  - [ACL Resource Location Discovery](#acl-resource-location-discovery)
+  - [容器和ACLs的继承](#容器和ACLs的继承)
+  - [为某个资源单独设置ACLs](#为某个资源单独设置ACLs)
+  - [ACL资源位置发现](#ACL资源位置发现)
 
-- [ACL Inheritance Algorithm](#acl-inheritance-algorithm)
-- [Representation Format](#representation-format)
-- [Example WAC Document](#example-wac-document)
+- [ACL继承算法](#ACL继承算法)
+- [表述格式](#表述格式)
+- [WAC文档范例](#WAC文档范例)
 - [Describing Agents](#describing-agents)
 
   - [Singular Agent](#singular-agent)
@@ -37,61 +37,41 @@ Next](https://www.w3.org/community/ldpnext/)）这类系统服务，例如
 
 ## 简介
 
-Web Access Control (WAC) is a decentralized cross-domain access control system.
-The main concepts should be familiar to developers, as they are similar to
-access control schemes used in many file systems. It's concerned with giving
-access to agents (users, groups and more) to perform various kinds of operations
-(read, write, append, etc) on resources. WAC has several key features:
+互联网访问控制 (Web Access Control，简称为 WAC) 是一个去中心化的控制跨域访问的系统。主要的概念应该是为开发者们所熟悉的，因为 WAC 的概念和许多文件系统中使用的访问控制的方案很相似。它关注的是授予各种实体（用户、用户群组等等）对资源做各种操作（读、写、追加等等）的权力。
 
-1. The resources are identified by URLs, and can refer to any web documents or
-   resources.
-2. It is _declarative_ -- access control policies live in regular web documents,
-   which can be exported/backed easily, using the same mechanism as you would
-   for backing up the rest of your data.
-3. Users and groups are also identified by URLs (specifically, by
-   [WebIDs](https://github.com/solid/solid-spec#identity))
-4. It is _cross-domain_ -- all of its components, such as resources, agent
-   WebIDs, and even the documents containing the access control policies, can
-   potentially reside on separate domains. In other words, you can give access
-   to a resource on one site to users and groups hosted on another site.
+WAC 有以下几个关键特性：
 
-## Access Control List Resources
+1. 资源是通过 URL 来标识的，URL 可以指向任何互联网文档或者其他类型的资源。
+2. 它是 _声明式的_ ，也就是说访问控制策略本身也是互联网文档。既然是文档，就可以被很方便地导出和备份，备份的方法就和备份你的其他任何文档一样。
+3. 用户和用户组也通过 URL 来标识（更具体地说，是 [WebIDs](https://github.com/solid/solid-spec#identity)）。
+4. 它是跨域的，它的所有组件，例如资源、实体的 WebIDs，甚至用来记录访问控制策略的这些文档本身，都可能存储在不同的域名下。换句话说，你可以让属于另一个站点的用户和用户组访问这个站点的资源。
 
-In a system that uses Web Access Control, each web resource has a set of
-_Authorization_ statements describing:
+## 访问控制列表资源
 
-1. Who has access to that resource (that is, who the authorized _agents_ are)
-2. What types (or _modes_) of access they have
+在一个使用 _互联网访问控制_ 的系统内，每个互联网资源都有一系列的 _授权_ 声明，它们描述了：
 
-These Authorizations are either explicitly set for an individual resource, or
-(more often) inherited from that resource's parent folder or container. In
-either case, the Authorization statements are placed into separate WAC
-documents called _Access Control List Resources_ (or simply _ACLs_).
+1. 谁有权访问这个资源（也就是 —— 得到授权的**实体**是哪些人）
+2. 访问权限是什么类型的（或者说它的 **modes** 是什么）
 
-### Containers and Inherited ACLs
+这些授权有时是特意为某一个资源指定的，但更多时候是从资源所在的文件夹或容器中继承而来的。从这两种情况得来的授权声明会分存放到各自的 WAC 文档中，这种授权声明文档称为 _访问控制列表资源_ （Access Control List Resources，ACLs）。
 
-The WAC system assumes that web documents are placed in hierarchical containers
-or folders. For convenience, users do not have to specify permissions on each
-individual resource -- they can simply set permissions on a container, add a
-[`acl:defaultForNew`](#default-inherited-authorizations) predicate, and have all
-of the resources in that container [inherit](#acl-inheritance-algorithm) those
-permissions.
+### 容器和ACLs的继承
 
-### Individual Resource ACLs
+WAC 系统加上互联网文档是存放在一层层的容器或者文件夹中的。方便起见，用户不需要特意去确定每个单独的资源的权限，他们可以简单地把权限设置在容器上：添加一个 [`acl:defaultForNew`](#default-inherited-authorizations) 谓词到容器上，这样里面的资源就都会[继承](#ACL继承算法)这些权限了。
 
-For fine-grained control, users can specify a set of permissions for each
-individual resource (which overrides any permissions of its parent container).
-See the [Example WAC Document](#example-wac-document) section to get an idea
-for what that would look like.
+### 为某个资源单独设置ACLs
 
-### ACL Resource Location Discovery
+需要更精确的控制的时候，用户可以为每个文件单独指定一系列的权限，这会覆盖掉来自它的容器的权限设置。可以在[WAC文档范例](#WAC文档范例)中看到它到底长什么样。
+
+### ACL资源位置发现
 
 Given a URL for an individual resource or container, a client can discover the
 location of its corresponding ACL by performing a `HEAD` (or a `GET`) request
 and parsing the `rel="acl"` link relation.
 
-Example request to discover the location of the ACL resource for a web document
-at `http://example.org/docs/file1` is given below:
+给定一个资源或者容器的 URL，一个客户端可以通过发送 `HEAD` 请求（`GET` 请求也行）并解析 `Link` 中的 `rel="acl"` 来发现这个资源相关的 ACL。
+
+下面这个例子是用来发现互联网文档 `http://example.org/docs/file1` 的 ACL 的请求：
 
 ```http
 HEAD /docs/file1 HTTP/1.1
@@ -101,8 +81,7 @@ HTTP/1.1 200 OK
 Link: <file1.acl>; rel="acl"
 ```
 
-The request to discover the location of a container's ACL resource looks
-similar:
+下面是用来发现容器的 ACL 资源的请求，长得和上面的差不多：
 
 ```http
 HEAD /docs/ HTTP/1.1
@@ -112,8 +91,7 @@ HTTP/1.1 200 OK
 Link: <.acl>; rel="acl"
 ```
 
-Note that the `acl` link relation uses relative path URLs (the absolute URL of
-the ACL resource in the above example would be `/docs/.acl`).
+注意 `acl` 链接使用相对路径 URL（上面这个例子里 ACL 资源的绝对路径是 `/docs/.acl`）。
 
 Clients MUST NOT assume that the location of an ACL resource can be
 deterministically derived from a document's URL. For example, given a document
@@ -125,7 +103,7 @@ ACL resource by appending the suffix `.acl`, another server could place the ACL
 resources into a sub-container (locating it at `/docs/.acl/file1.acl` for the
 example above).
 
-## ACL Inheritance Algorithm
+## ACL继承算法
 
 The following algorithm is used by servers to determine which ACL resources
 (and hence which set of Authorization statements) apply to any given resource:
@@ -177,7 +155,7 @@ A request (to read or write) has arrived for a document located at
 See the [Default (Inherited) Authorizations](#default-inherited-authorizations)
 section below for an example of what a container's ACL resource might look like.
 
-## Representation Format
+## 表述格式
 
 The permissions in an ACL resource are stored in Linked Data format
 ([Turtle](http://www.w3.org/TR/turtle/) by default, but also available in other
