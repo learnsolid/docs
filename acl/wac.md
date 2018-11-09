@@ -22,18 +22,18 @@ Next](https://www.w3.org/community/ldpnext/)）这类系统服务，例如
 - [ACL继承算法](#ACL继承算法)
 - [表述格式](#表述格式)
 - [WAC文档范例](#WAC文档范例)
-- [Describing Agents](#describing-agents)
+- [描述实体](#描述实体)
 
-  - [Singular Agent](#singular-agent)
-  - [Groups](#groups-of-agents)
-  - [Public Access (all Agents)](#public-access-all-agents)
-  - [Anyone logged on (Authenticated Agents)](#authenticated-agents-anyone-logged-on)
+  - [单个实体](#单个实体)
+  - [实体组](#实体组)
+  - [公开访问（所有实体）](#公开访问（所有实体）)
+  - [鉴权实体（即已登录用户）](#鉴权实体（即已登录用户）)
   - [Referring to Origins, i.e. Web Apps](#referring-to-origins-ie-web-apps)
 
 - [Referring to Resources](#referring-to-resources)
 - [Modes of Access](#modes-of-access)
-- [Default (Inherited) Authorizations](#default-inherited-authorizations)
-- [Not Supported by Design](#not-supported-by-design)
+- [默认（继承的）授权](#默认（继承的）授权)
+- [故意不支持的特性](#故意不支持的特性)
 
 ## 简介
 
@@ -57,17 +57,13 @@ WAC 有以下几个关键特性：
 
 ### 容器和ACLs的继承
 
-WAC 系统加上互联网文档是存放在一层层的容器或者文件夹中的。方便起见，用户不需要特意去确定每个单独的资源的权限，他们可以简单地把权限设置在容器上：添加一个 [`acl:defaultForNew`](#default-inherited-authorizations) 谓词到容器上，这样里面的资源就都会[继承](#ACL继承算法)这些权限了。
+WAC 系统加上互联网文档是存放在一层层的容器或者文件夹中的。方便起见，用户不需要特意去确定每个单独的资源的权限，他们可以简单地把权限设置在容器上：添加一个 [`acl:defaultForNew`](#默认（继承的）授权) 谓词到容器上，这样里面的资源就都会[继承](#ACL继承算法)这些权限了。
 
 ### 为某个资源单独设置ACLs
 
 需要更精确的控制的时候，用户可以为每个文件单独指定一系列的权限，这会覆盖掉来自它的容器的权限设置。可以在[WAC文档范例](#WAC文档范例)中看到它到底长什么样。
 
 ### ACL资源位置发现
-
-Given a URL for an individual resource or container, a client can discover the
-location of its corresponding ACL by performing a `HEAD` (or a `GET`) request
-and parsing the `rel="acl"` link relation.
 
 给定一个资源或者容器的 URL，一个客户端可以通过发送 `HEAD` 请求（`GET` 请求也行）并解析 `Link` 中的 `rel="acl"` 来发现这个资源相关的 ACL。
 
@@ -93,88 +89,51 @@ Link: <.acl>; rel="acl"
 
 注意 `acl` 链接使用相对路径 URL（上面这个例子里 ACL 资源的绝对路径是 `/docs/.acl`）。
 
-Clients MUST NOT assume that the location of an ACL resource can be
-deterministically derived from a document's URL. For example, given a document
-with a URL of `/docs/file1`, clients cannot rely on the assumption that an ACL
-resource exists at `/docs/file1.acl`, simply using `.acl` as a prefix. The
-actual naming convention for ACL resources can differ for each individual
-implementation (or even for each individual server). If one server locates the
-ACL resource by appending the suffix `.acl`, another server could place the ACL
-resources into a sub-container (locating it at `/docs/.acl/file1.acl` for the
-example above).
+客户端绝不能想当然地以为 ACL 资源的位置可以通过文档的 URL 来猜到。比如说给定一个文档的 URL `/docs/file1`，客户端不能直接猜测 ACL 资源就在 `/docs/file1.acl`，这样简单地加一个 `.acl` 在 URL 后面是不可取的。因为 ACL 资源的命名方式可能因程序的具体实现而不同（甚至每个服务器都有可能采取不同的方案）。如果有的服务器会通过加上 `.acl` 后缀的形式来定位 ACL 资源，而另一个服务器可能会选择把所有 ACL 资源统一存放在一个子文件夹里，比如 `/docs/.acl/file1.acl`。
 
 ## ACL继承算法
 
-The following algorithm is used by servers to determine which ACL resources
-(and hence which set of Authorization statements) apply to any given resource:
+下面的这个算法是服务器用来确定把哪个 ACL 资源（也就是哪一个授权声明的集合）应用到任何一个给定的资源上的：
 
-1. Use the document's own ACL resource if it exists (in which case, stop here).
-2. Otherwise, look for authorizations to inherit from the ACL of the document's
-   container. If those are found, stop here.
-3. Failing that, check the container's _parent_ container to see if _that_ has
-   its own ACL file, and see if there are any permissions to inherit.
-4. Failing that, move up the container hierarchy until you find a container
-   with an existing ACL file, which has some permissions to inherit.
-5. The _root container_ of a user's account MUST have an ACL resource specified.
-   (If all else fails, the search stops there.)
+1. 使用文档自己的 ACL 资源，如果它有的话（在这种情况下，算法停止在这一步）
+2. 不然，尝试从文档的容器的 ACL 中继承授权。如果找到了，就停止在这一步。
+3. 如果没找到，检查容器的父容器，看看父容器有没有 ACL 文件，有没有什么可继承的权限。
+4. 也没有的话，顺着容器层级往上找，直到找到一个带有 ACL 文件的容器，这样我们就有一些权限可以继承了。
+5. 用户账号的**根容器**必须有一个 ACL 资源（如果之前的步骤都失败了，那么这就是最后的救命稻草）
 
-It is considered an anti-pattern for a _client_ to perform those steps, however.
-A client may [discover](#acl-resource-location-discovery) and load a document's
-individual resource (for example, for the purposes of editing its permissions).
-If such a resource does not exist, a client SHOULD NOT search for, or interact
-with, the inherited ACLs from an upstream container.
+客户端不应该去实现上述步骤，不然就是个反面模式。然而客户端可能会需要[发现](#ACL资源位置发现)和加载一个文档的单独的 ACL 资源（比如说当客户端想要编辑这个文件的权限的时候）。如果这个 ACL 资源并不存在，客户端**不应该**去搜索来自上游容器的 ACLs，也不应该直接与上游的 ACLs 进行交互。
 
-### ACL Inheritance Algorithm Example
+### ACL继承算法的例子
 
-_Note:_ The server in the examples below is using the ACL naming convention of
-appending `.acl` to resource URLs, for simplicity. As mentioned in the section
-on [ACL discovery](#acl-resource-location-discovery), clients should not use
-or assume any naming convention.
+注意：为简单起见，下面这个例子中的服务器端使用了在资源 URL 后加上 `.acl` 的命名惯例。但就像之前说过的，客户端不应该对 ACL 资源的命名方式有任何假设。
 
-A request (to read or write) has arrived for a document located at
-`/documents/papers/paper1`. The server does as follows:
+一个请求（读或者写）发送到了位于 `/documents/papers/paper1` 的文档，服务器开始做下列事情：
 
-1. First, it checks for the existence of an individual corresponding ACL
-   resource. (That is, it checks if `paper1.acl` exists.) If this individual ACL
-   resource exists, the server uses the Authorization statements in that ACL. No
-   other statements apply.
-2. If no individual ACL exists, the server next checks to see if the
-   `/documents/papers/` container (in which the document resides) has its own
-   ACL resource (here, `/documents/papers/.acl`). If it finds that, the server
-   reads each authorization in the container's ACL, and if any of them contain an
-   `acl:defaultForNew` predicate, the server will use them (as if they were
-   specified in `paper1.acl`). Again, if any such authorizations are found, the
-   process stops there and no other statements apply.
-3. If the document's container has no ACL resource of its own, the search
-   continues upstream, in the _parent_ container. The server would check if
-   `/documents/.acl` exists, and then `/.acl`, until it finds some authorizations
-   that contain `acl:defaultForNew`.
-4. Since the root container (here, `/`) MUST have its own ACL resource, the
-   server would use the authorizations there as a last resort.
+1. 首先，它检查是否存在相应的独立的 ACL 资源（也就是检查 `paper1.acl` 是否存在）。如果这个独立的 ACL 资源存在，服务器使用这个 ACL 中的授权声明，忽略其他来源的声明。
+2. 如果没有独立的 ACL，服务器接着会检查 `/documents/papers/` 容器（也就是文件所在的容器）是否有自己的 ACL 资源（此处为 `/documents/papers/.acl`）。如果找到了，服务器读取每一条容器的 ACL 中的授权，如果任意一条包含了 `acl:defaultForNew` 谓词，服务器就会使用这条授权（就好像这条授权是存在于 `paper1.acl` 里的意义）。如果找到了这样的授权，我们忽略其他来源的声明。
+3. 如果文档的容器也没有自己的 ACL 资源，继续往上游的父文件夹搜索。服务器会检查 `/documents/.acl` 是否存在，然后检查 `/.acl` 知道服务器找到某个包含了 `acl:defaultForNew` 的授权。
+4. 因为根容器（此处为 `/`）**必须**要有自己的 ACL 资源，服务器可以把它作为最后一根救命稻草。
 
-See the [Default (Inherited) Authorizations](#default-inherited-authorizations)
-section below for an example of what a container's ACL resource might look like.
+在下面的[默认（继承的）授权](#默认（继承的）授权)章节可以看到一个容器的 ACL 资源到底是什么样的。
 
 ## 表述格式
 
-The permissions in an ACL resource are stored in Linked Data format
-([Turtle](http://www.w3.org/TR/turtle/) by default, but also available in other
-serializations).
+ACL资源中的权限以互联数据的格式存储
+（默认情况下是[Turtle](http://www.w3.org/TR/turtle/)，也可以因地制宜使用
+其他格式来序列化）。
 
-_Note: A familiarity with Linked Data and
-[RDF Concepts](http://www.w3.org/TR/rdf11-concepts/) helps with understanding
-the terminology used in this spec._
+注意：熟悉关联数据和[RDF 基本概念](http://www.w3.org/TR/rdf11-concepts/)有助于理解本规范中使用的各种术语。
 
-WAC uses the [`http://www.w3.org/ns/auth/acl`](http://www.w3.org/ns/auth/acl)
-ontology for its terms. Through the rest of the spec, the prefix `acl:` is
-assumed to mean `@prefix acl: <http://www.w3.org/ns/auth/acl#> .`
+WAC 使用 [`http://www.w3.org/ns/auth/acl`](http://www.w3.org/ns/auth/acl) 本体。在下文中，前缀 `acl:` 的意思都是 `@prefix acl: <http://www.w3.org/ns/auth/acl#> .`
 
-## Example WAC Document
+## WAC文档范例
 
 Below is an example ACL resource that specifies that Alice (as identified by her
 WebID `https://alice.databox.me/profile/card#me`) has full access (Read, Write
 and Control) to one of her web resources, located at
 `https://alice.databox.me/docs/file1`.
+
+下面是一个 ACL 资源的范例，它指定 Alice（她的 WebID 是`https://alice.databox.me/profile/card#me` ）对她位于 `https://alice.databox.me/docs/file1` 的一个网络资源具有完全访问权限（读取、写入和控制）。
 
 ```turtle
 # Contents of https://alice.databox.me/docs/file1.acl
@@ -189,29 +148,19 @@ and Control) to one of her web resources, located at
                   acl:Control.
 ```
 
-## Describing Agents
+## 描述实体
 
-In WAC, we use the term _Agent_ to identify _who_ is allowed access to various
-resources. In general, it is assumed to mean "someone or something that can
-be referenced with a WebID", which covers users, groups (as well as companies
-and organizations), and software agents such as applications or services.
+在WAC中，我们使用术语「实体」（_Agent_）来指称被允许访问各种资源的那个**谁**。一般来说，它是指「可以通过 WebID 引用的某人或任何其他行为体」，涵盖了用户、用户组（以及公司、组织等），以及软件代理，例如应用程序或服务等等。
 
-### Singular Agent
+### 单个实体
 
-An authorization may list any number of individual agents (that are being given
-access) by using the `acl:agent` predicate, and using their WebID URIs as
-objects. The example WAC document in a previous section grants access to Alice,
-as denoted by her WebID URI, `https://alice.databox.me/profile/card#me`.
+授权中可以提到任意数量的独立实体（被允许访问资源的），描述方式是在 ACL 中把这些实体的 WebID URI 作为宾语，放在 `acl:agent` 谓词之后。比如上一节中的示例 WAC 文档授予对 Alice 的访问权限，就是通过在 `acl:agent` 谓词之后加上她的 WebID URI `https://alice.databox.me/profile/card#me` 来表示的。
 
-### Groups of Agents
+### 实体组
 
-To give access to a group of agents, use the `acl:agentGroup` predicate.
-The object of an `agentGroup` statement is a link to a **Group Listing**
-document. The WebIDs of group members are listed in it, using the
-`vcard:hasMember` predicate. If a WebID is listed in that document, it is
-given access.
+要向一组实体授权的话，使用 `acl:agentGroup` 谓词。`agentGroup` 陈述的宾语是一个指向**群组成员列表**文档的链接，其中用 `vcard:hasMember` 谓词列出了群组成员的 WebID。所有列在这个文档中的 WebID 都会得到授权。
 
-Example ACL resource, `shared-file1.acl`, containing a group permission:
+下面的示例中，ACL 资源 `shared-file1.acl` 包含了一个对用户组的授权：
 
 ```turtle
 # Contents of https://alice.databox.me/docs/shared-file1.acl
@@ -237,7 +186,7 @@ Example ACL resource, `shared-file1.acl`, containing a group permission:
     acl:agentGroup  <https://alice.example.com/work-groups#Management>.
 ```
 
-Corresponding `work-groups` Group Listing document:
+相应的群组成员列表文档是：
 
 ```turtle
 # Contents of https://alice.example.com/work-groups
@@ -264,28 +213,20 @@ Corresponding `work-groups` Group Listing document:
     vcard:hasMember  <https://deb.example.com/profile/card#me>.
 ```
 
-#### Group Listings - Implementation Notes
+#### 群组成员列表实现注意事项
 
-When implementing support for `acl:agentGroup` and Group Listings, keep in mind
-the following issues:
+当实现对 `acl:agentGroup` 的支持，以及群组成员列表的时候，注意以下几点：
 
-1. Group Listings are regular documents (potentially each with its own `.acl`).
-2. What authentication mechanism should the ACL checking engine use, when making
-   requests for Group Listing documents on other servers?
-3. Infinite request loops during ACL resolution become possible, if an `.acl`
-   points to a group listing on a different server.
-4. Therefore, for the moment, we suggest that all Group files which are used
-   for group ACLs are public.
+1. 群组成员列表也是普通的文档（可能每个文档也都有自己的 `.acl`）。
+2. 当需要到其他服务器上请求群组成员列表的时候，ACL 确权引擎应该用什么样的授权策略？
+3. 如果 `.acl` 指向其他服务器上的群组成员列表，则在 ACL 解析时请求可能发生无限循环。
+4. 因此，目前我们建议使用把所有用于群组授权 ACLs 的群组成员列表文件都设置成公开的。
 
-Possible future methods for a server to find out whether a given agent is a
-member of s group are a matter for future research and possible addition here.
+更好的发现一个实体是否属于一个群组的方式还在研究中，取得进展后会在此处更新。
 
-### Public Access (All Agents)
+### 公开访问（所有实体）
 
-To specify that you're giving a particular mode of access to _everyone_
-(for example, that your WebID Profile is public-readable), you can use
-`acl:agentClass foaf:Agent` to denote that you're giving access to the class
-of _all_ agents (the general public). For example:
+如果想要明确表示你把某个权限开放给**所有人**（比如你想把你的 WebID 个人档案设置成公共可见的），你可以使用 `acl:agentClass foaf:Agent` 来表明你把权限授予**所有**实体（也就是公开）：
 
 ```turtle
 @prefix   acl:  <http://www.w3.org/ns/auth/acl#>.
@@ -301,18 +242,13 @@ of _all_ agents (the general public). For example:
 Note that this is a special case of `acl:agentClass` usage, since it doesn't
 point to a Class Listing document that's meant to be de-referenced.
 
-### Authenticated Agents (Anyone logged on)
+要注意这是 `acl:agentClass` 的一个特殊用法，一般来说 `agentClass` 要指向一个可以解引用（de-referenced）的类别列表文件（Class Listing document）。
 
-Authenticated access is a bit like public access
-but it is not anonymous. Access is only given to people
-who have logged on and provided a specific ID.
-This allows the server to track the people who have used the resource.
+### 鉴权实体（即已登录用户）
 
-To specify that you're giving a particular mode of access to anyone _logged on_
-(for example, that your collaborative page is open to anyone but you want to know who they are),
-you can use
-`acl:agentClass acl:AuthenticatedAgent` to denote that you're giving access to the class
-of _all_ authenticated agents. For example:
+鉴权访问有点像公共访问，区别在于鉴权访问是不匿名的，只有登录并提供特定 WebID 的人才能访问，这允许服务器跟踪和记录使用过该资源的人员。
+
+要指定你为已登录的任何人提供特定的访问授权模式（例如，你的协作页面对所有人开放，但你想知道他们是谁），你可以使用 `acl:agentClass acl:AuthenticatedAgent` 来表示你为**所有**鉴权实体提供访问许可：
 
 ```turtle
 @prefix   acl:  <http://www.w3.org/ns/auth/acl#>.
@@ -325,12 +261,9 @@ of _all_ authenticated agents. For example:
     acl:accessTo    <https://alice.databox.me/profile/card>.  # to the public profile
 ```
 
-Note that this is a special case of `acl:agentClass` usage, since it doesn't
-point to a Class Listing document that's meant to be de-referenced.
+要注意这是 `acl:agentClass` 的一个特殊用法，因为它没指向一个可以解引用的类别列表文件。
 
-An application of this feature is to throw a resource open to all logged on users
-for a specific amount of time, accumulate the list of those who case as a group,
-and then later restrict access to that group, to prevent spam.
+此功能的一个应用是，在特定时间内向所有登录用户开放资源，来了解那些人可能对这个资源感兴趣，然后用记录下的用户列表拉一个群，然后限制今后只有该群能访问，以防止社群快速扩大后成员素质失去控制。
 
 ### Referring to Origins, i.e. Web Apps
 
@@ -469,7 +402,7 @@ Write access (to prevent accidental over-writing of a resource by an app), but
 be able to change their access levels at a later point (since they retain
 `acl:Control` access).
 
-## Default (Inherited) Authorizations
+## 默认（继承的）授权
 
 As previously mentioned, not every document needs its own individual ACL
 resource and its own authorizations. Instead, one can can create an
@@ -651,22 +584,18 @@ wants to use must be signed by developer from a given list, and so on.
 Therefore, by pulling the profiles of the reader and/or the writer, and/or the Origin app itself,
 the system can be adjusted to allow new apps to be added without bad things happening
 
-## Not Supported by Design
+## 故意不支持的特性
 
-This section describes some features or acl-related terms that are not included
-in this spec by design.
+这一段内容描述了一下 ACL 相关的术语，它们没在此规范中出现是因为我们因为一些理由特意不支持它们。
 
-### Resource Owners
+### 资源所有者
 
-WAC has no formal notion of a resource owner, and no explicit Owner access mode.
-For convenience/UI purposes, it may be assumed that Owners are agents that have
-Read, Write and Control permissions.
+WAC 没有正式的方法来标记一个资源的所有者，也没有一个显式的 Owner 访问权限在那。为了应用开发方便，可以把拥有读取、写入和控制权限的实体称为这个资源的所有者。
 
 ### acl:accessToClass
 
-The predicate `acl:accessToClass` is not supported.
+谓词 `acl:accessToClass` 尚未得到支撑。
 
-### Regular Expressions
+### 正则表达式
 
-The use of regular expressions in statements such as `acl:agentClass` is not
-supported.
+截至目前，我们还不支持在 `acl:agentClass` 等陈述中使用正则表达式。
