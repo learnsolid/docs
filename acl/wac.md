@@ -10,28 +10,30 @@ Next](https://www.w3.org/community/ldpnext/)）这类系统服务，例如
 
 **当前规范版本：** `v.0.5.0`（详见英文原文的 [CHANGELOG.md](https://github.com/solid/web-access-control-spec/blob/master/CHANGELOG.md)）
 
+当新版本出现，或译文有误时，请提出 issue 或者 PR 协助勘误。
+
 ## 大纲
 
 - [简介](#简介)
 - [访问控制列表资源](#访问控制列表资源)
 
-  - [容器和ACLs的继承](#容器和ACLs的继承)
-  - [为某个资源单独设置ACLs](#为某个资源单独设置ACLs)
-  - [ACL资源位置发现](#ACL资源位置发现)
+  - [容器和 ACLs 的继承](#容器和ACLs的继承)
+  - [为某个资源单独设置 ACLs](#为某个资源单独设置ACLs)
+  - [ACL 资源位置发现](#ACL资源位置发现)
 
-- [ACL继承算法](#ACL继承算法)
+- [ACL 继承算法](#ACL继承算法)
 - [表述格式](#表述格式)
-- [WAC文档范例](#WAC文档范例)
+- [WAC 文档范例](#WAC文档范例)
 - [描述实体](#描述实体)
 
   - [单个实体](#单个实体)
   - [实体组](#实体组)
   - [公开访问（所有实体）](#公开访问（所有实体）)
   - [鉴权实体（即已登录用户）](#鉴权实体（即已登录用户）)
-  - [Referring to Origins, i.e. Web Apps](#referring-to-origins-ie-web-apps)
+  - [参考 Origin，也就是互联网应用](#参考Origin，也就是互联网应用)
 
-- [Referring to Resources](#referring-to-resources)
-- [Modes of Access](#modes-of-access)
+- [指涉资源](#指涉资源)
+- [访问模式](#访问模式)
 - [默认（继承的）授权](#默认（继承的）授权)
 - [故意不支持的特性](#故意不支持的特性)
 
@@ -55,15 +57,15 @@ WAC 有以下几个关键特性：
 
 这些授权有时是特意为某一个资源指定的，但更多时候是从资源所在的文件夹或容器中继承而来的。从这两种情况得来的授权声明会分存放到各自的 WAC 文档中，这种授权声明文档称为 _访问控制列表资源_ （Access Control List Resources，ACLs）。
 
-### 容器和ACLs的继承
+### 容器和 ACLs 的继承
 
 WAC 系统加上互联网文档是存放在一层层的容器或者文件夹中的。方便起见，用户不需要特意去确定每个单独的资源的权限，他们可以简单地把权限设置在容器上：添加一个 [`acl:defaultForNew`](#默认（继承的）授权) 谓词到容器上，这样里面的资源就都会[继承](#ACL继承算法)这些权限了。
 
-### 为某个资源单独设置ACLs
+### 为某个资源单独设置 ACLs
 
-需要更精确的控制的时候，用户可以为每个文件单独指定一系列的权限，这会覆盖掉来自它的容器的权限设置。可以在[WAC文档范例](#WAC文档范例)中看到它到底长什么样。
+需要更精确的控制的时候，用户可以为每个文件单独指定一系列的权限，这会覆盖掉来自它的容器的权限设置。可以在[WAC 文档范例](#WAC文档范例)中看到它到底长什么样。
 
-### ACL资源位置发现
+### ACL 资源位置发现
 
 给定一个资源或者容器的 URL，一个客户端可以通过发送 `HEAD` 请求（`GET` 请求也行）并解析 `Link` 中的 `rel="acl"` 来发现这个资源相关的 ACL。
 
@@ -91,7 +93,7 @@ Link: <.acl>; rel="acl"
 
 客户端绝不能想当然地以为 ACL 资源的位置可以通过文档的 URL 来猜到。比如说给定一个文档的 URL `/docs/file1`，客户端不能直接猜测 ACL 资源就在 `/docs/file1.acl`，这样简单地加一个 `.acl` 在 URL 后面是不可取的。因为 ACL 资源的命名方式可能因程序的具体实现而不同（甚至每个服务器都有可能采取不同的方案）。如果有的服务器会通过加上 `.acl` 后缀的形式来定位 ACL 资源，而另一个服务器可能会选择把所有 ACL 资源统一存放在一个子文件夹里，比如 `/docs/.acl/file1.acl`。
 
-## ACL继承算法
+## ACL 继承算法
 
 下面的这个算法是服务器用来确定把哪个 ACL 资源（也就是哪一个授权声明的集合）应用到任何一个给定的资源上的：
 
@@ -103,7 +105,7 @@ Link: <.acl>; rel="acl"
 
 客户端不应该去实现上述步骤，不然就是个反面模式。然而客户端可能会需要[发现](#ACL资源位置发现)和加载一个文档的单独的 ACL 资源（比如说当客户端想要编辑这个文件的权限的时候）。如果这个 ACL 资源并不存在，客户端**不应该**去搜索来自上游容器的 ACLs，也不应该直接与上游的 ACLs 进行交互。
 
-### ACL继承算法的例子
+### ACL 继承算法的例子
 
 注意：为简单起见，下面这个例子中的服务器端使用了在资源 URL 后加上 `.acl` 的命名惯例。但就像之前说过的，客户端不应该对 ACL 资源的命名方式有任何假设。
 
@@ -118,7 +120,7 @@ Link: <.acl>; rel="acl"
 
 ## 表述格式
 
-ACL资源中的权限以互联数据的格式存储
+ACL 资源中的权限以互联数据的格式存储
 （默认情况下是[Turtle](http://www.w3.org/TR/turtle/)，也可以因地制宜使用
 其他格式来序列化）。
 
@@ -126,7 +128,7 @@ ACL资源中的权限以互联数据的格式存储
 
 WAC 使用 [`http://www.w3.org/ns/auth/acl`](http://www.w3.org/ns/auth/acl) 本体。在下文中，前缀 `acl:` 的意思都是 `@prefix acl: <http://www.w3.org/ns/auth/acl#> .`
 
-## WAC文档范例
+## WAC 文档范例
 
 Below is an example ACL resource that specifies that Alice (as identified by her
 WebID `https://alice.databox.me/profile/card#me`) has full access (Read, Write
@@ -150,7 +152,7 @@ and Control) to one of her web resources, located at
 
 ## 描述实体
 
-在WAC中，我们使用术语「实体」（_Agent_）来指称被允许访问各种资源的那个**谁**。一般来说，它是指「可以通过 WebID 引用的某人或任何其他行为体」，涵盖了用户、用户组（以及公司、组织等），以及软件代理，例如应用程序或服务等等。
+在 WAC 中，我们使用术语「实体」（_Agent_）来指称被允许访问各种资源的那个**谁**。一般来说，它是指「可以通过 WebID 引用的某人或任何其他行为体」，涵盖了用户、用户组（以及公司、组织等），以及软件代理，例如应用程序或服务等等。
 
 ### 单个实体
 
@@ -265,55 +267,46 @@ point to a Class Listing document that's meant to be de-referenced.
 
 此功能的一个应用是，在特定时间内向所有登录用户开放资源，来了解那些人可能对这个资源感兴趣，然后用记录下的用户列表拉一个群，然后限制今后只有该群能访问，以防止社群快速扩大后成员素质失去控制。
 
-### Referring to Origins, i.e. Web Apps
+### 参考 Origin，也就是互联网应用
 
-When a compliant server receives a request from a web application running
-in a browser, the browser will send an extra warning HTTP header, the Origin header.
+当一个有良好实现的服务器接收到来自某个浏览器中 Web 应用的请求的时候，浏览器还会发送一个额外的警示性的 HTTP 头，也就是「Origin header」：
 
 ```http-header
 Origin: https://scripts.example.com:8080
 ```
 
-(For background, see also [Backgrounder on Same Origin Policy and CORS](acl/same-origin))
-Note that the origin comprises the protocol and the DNS and port but none of the path,
-and no trailing slash.
-All scripts running on the same origin are assumed to be run by the same
-social entity, and so trusted to the same extent.
+（如果你不了解这个设计的背景的话，请阅读[同源策略和 CORS 的背景知识](acl/same-origin)）
 
-_When an Origin header is present then BOTH the authenticated agent AND
-the origin MUST be allowed access_
+注意到源包括了协议、DNS 和端口号，但不包括具体路径，尾部也没有斜杠。所有在同一个源上运行的程序都默认是由同一个社会学实体控制的，因此这些程序也得到同样的信任。当 Origin header 出现时，鉴权实体和这个源都必须被允许访问。
 
-As both the user and the web app get to read or write (etc) the data, then they most BOTH
-be trusted. This is the algorithm the server must go through.
+当用户和互联网应用读取或写入数据的时候，他们都必须被信任，这是服务器必须跑通的算法：
 
-- If the requested mode is available to the public, then succeed `200 OK` with added CORS headers ACAO and ACAH \*\*
-- If the user is _not_ logged on, then fail `401 Unauthenticated`
-- Is the User authenticated is _not_ allowed access required, AND the class AuthenticatedAgent is not allowed access, then fail `403 User Unauthorized`
-- If the Origin header is not present, the succeed `200 OK`
-- If the Origin is allowed by the ACL, then succeed `200 OK` with added CORS headers ACAO and ACAH
-- (In future proposed) Look up the owner's webid(s) to check for trusted apps declared there, and if match, succeed `200 OK` with added CORS headers ACAO and ACAH
-- Fail `403 Origin Unauthorized`
+- 如果请求的内容是完全公开的，那么使用 `200 OK` 并添加 CORS 头 ACAO 和 ACAH \*\*
+- 如果用户尚未登录，则失败 `401 Unauthenticated`
+- 如果鉴权用户没有被允许访问，并且不允许 AuthenticatedAgent 类访问，那么失败 `403 User Unauthorized`
+- 如果没有收到 Origin header 不存在，那么成功访问 `200 OK`
+- 如果 ACL 允许这个源访问，那么成功访问 `200 OK` 并添加 CORS 头 ACAO 和 ACAH
+- （在未来的提案中）查看所有者的 WebID 以检查在个人档案中声明为可信的应用程序，如果匹配上了，则成功访问 `200 OK` 并添加 CORS 头 ACAO 和 ACAH
+- 失败时，`403 Origin Unauthorized`
 
-Note it is a really good idea to make it clear both in the text of the status message and in the body of
-the message the difference between the user not being allowed and the web app they are using
-not being trusted.
+请注意，当拒绝访问时，在状态消息的文本和消息正文中清楚地表明我们到底是不允许用户访问还是我们不信任用户正在使用的 Web 应用程序，是一个非常好的主意。
 
-\*_ Possible future alternative: Set ACAO header to `"_"` indicating that the document is public. This will though block in the browser any access made using credentials.
+未来可能的其他方案：把 ACAO 头设为 `"_"` 来表明文档是公开的。尽管这会阻止浏览器使用凭据来进行访问。
 
-#### Adding trusted web apps.
+#### 添加受信任的互联网应用
 
-The authorization of trusted web app is a running battle between readers and writers on the web, and malevolent parties trying to break in to get unauthorized access. The history or Cross-Site Scripting attacks and the introduction of the Same Origin Policy is not detailed here, The CORS specification in general prevents any web app from accessing any data from or associated with a different origin. The web server can get around CORS. It is a pain to to do so, as it involves the server code echoing back the Origin header in the ACAO header, and also it must be done only when the web app in question actually is trustworthy.
+受信任的网络应用程序的授权是网络上的访问者（文献中一般称为 reader）和数据发布者（文献中一般称为 writer）之间的竞争，以及恶意方试图闯入以获得未经授权的访问。XSS 攻击以及同源策略的引入的历史就不在此详述了，CORS 规范通常会阻止任何互联网应用程序访问来自不同来源或者与其他来源相关的任何数据。通过服务器做跳板我们可以绕过 CORS，但这样做很麻烦，因为它涉及服务器代码返回的 ACAO header 中的 Origin header，并且只有当某个看起来有问题的互联网应用程序实际上却值得信任时才必须这样做。
 
-In solid a maxim is, you have complete control of he data. Therefore it is up to the owner of the data, the publisher, the controller of the ACL, or more broadly the person running the solid server, to specify who gets access, be it people or apps. However another maxim is that you can chose which app you use. So of Alice publishes data, and Bob want to use his favorite app, then how does that happen?
+SoLiD 的宣传标语是你完全拥有你的数据。因此，由数据的所有者、发布者、ACL 的控制者或者那些自己架设 SoLiD 服务器的人来指定谁（无论是人还是应用程序）可以访问数据。然而，另一个宣传标语是你可以自由选择你想使用的应用程序。在这种情况下，Alice 发布了数据，然后 Bob 希望使用他想用的那个应用程序，我们要怎么做到这两点？
 
-##### Now:
+##### 现在：
 
-- The web server can run with a given trusted domain created by the solid developers.
-- A specific ACL can be be made to allow a given app to access a given file or folder of files.
+- Web 服务器可以与在受信任的域名上的互联网应用通信
+- 特定的 ACL 可以让一个特定的应用能够访问一个特定的文件或者文件夹
 
-##### Possible future:
+##### 可能的特性：
 
-- A writer could give in their profile a statement that they will allow readers to use a given app.
+- 数据发布者可以在自己的个人档案中声明他们允许读者使用某些特定的应用程序来读取数据。
 
 ```turtle
  <#me> acl:trustedApp [ acl:origin  <https://calendar.example.com>;
@@ -325,97 +318,64 @@ In solid a maxim is, you have complete control of he data. Therefore it is up to
                                     acl:Control].
 ```
 
-We define the owners of the resource as people given explicit Control access to it.
-(Possible future change: also anyone with Control access, even through a group, as the group can be used as a role)
+我们把资源的所有者定义为被显式地授予 `Control` 访问权限的那些人。（未来可能的改变：同时还加上任何拥有 `Control` 访问权限的人，以及组织，因为组织也可以作为 ACL 中的角色）
 
-For each owner x, the server looks up the (extended?) profile, and looks in it for a
-triple of the form
+对于每个拥有者 x，服务器在个人档案里搜索这样的一个三元组：
 
 ```turtle
 ?x  acl:trustedApp  ?y.
 ```
 
-The set of trust objects is the accumulated set of ?y found in this way.
+搜索完成后所有这样的三元组的宾语就会组成一个可信应用的集合。
 
-For the app ?z to have access, for every mode of access ?m required
-there must be some trust object ?y such that
+如果想让应用 `?z` 获得访问权限，那么对于每一个它所需的访问权限 `?m`，都需要有一个如下的可信的 `?y`：
 
 ```turtle
 ?y  acl:origin  ?z;
     acl:mode    ?m.
 ```
 
-Note access to different modes may be given in the same or different trust objects.
+可以注意到，`?z` 的几个不同的访问权限可能会来自好几个不同的 `?y`。
 
-## Referring to Resources
+## 指涉资源
 
-The `acl:accessTo` predicate specifies _which resources_ you're giving access
-to, using their URLs as the subjects.
+`acl:accessTo` 的意思是，你对**哪个资源**有访问权限，把资源的 URL 作为谓词的宾语。
 
-### Referring to the ACL Resource Itself
+### 指涉 ACL 资源本身
 
-Since an ACL resource is a plain Web document in itself, what controls who
-has access to _it_? While an ACL resource _could_ in theory have its own
-corresponding ACL document (for example, `file1.acl` controls access to `file1`,
-and `file1.acl.acl` could potentially control access to `file1.acl`), one
-quickly realizes thats this recursion has to end somewhere.
+因为 ACL 资源也是一个普通的互联网文档，那么我们可以用什么来控制对 ACL 资源的访问呢？尽管理论上 ACL 资源也可以拥有它们自己的 ACL 文档（例如 `file1.acl` 控制对 `file1` 的访问，`file1.acl.acl` 控制对 `file1.acl` 的访问），但每个试图这样管理 ACL 文档的人都会意识到这个递归过程总要在某个 ACL 文档上结束。
 
-Instead, the [`acl:Control` access mode](#aclcontrol) is used (see below), to
-specify who has access to alter (or even view) the ACL resource.
+所以我们转而用 [`acl:Control` 访问模式](#aclcontrol) 来指定谁有权去更改或者查看某个 ACL 资源。
 
-## Modes of Access
+## 访问模式
 
-The `acl:mode` predicate denotes a class of operations that the agents can
-perform on a resource.
+`acl:mode` 谓词表示了实体可以对资源进行的一些操作。
 
-##### `acl:Read`
+### `acl:Read`
 
-gives access to a class of operations that can be described as "Read
-Access". In a typical REST API (such as the one used by
-[Solid](https://github.com/solid/solid-spec#https-rest-api)), this includes
-access to HTTP verbs `GET`, and `HEAD`. This also includes any kind of
-QUERY or SEARCH verbs, if supported.
+授权你使用一系列可以称为「读取访问」的操作。在常见的 REST API 中（例如用在 [Solid](https://github.com/solid/solid-spec#https-rest-api) 里的）相对应的是 `GET` 和 `HEAD` 这两个 HTTP 动词。不过其实还应该包括 `QUERY` 和 `SEARCH` 这两个动词，前提是服务器提供支持。
 
-##### `acl:Write`
+### `acl:Write`
 
-gives access to a class of operations that can modify the resource. In a REST
-API context, this would include `PUT`, `POST`, `DELETE` and `PATCH`. This also
-includes the ability to perform SPARQL queries that perform updates, if those
-are supported.
+授权你使用一系列可以对资源做出修改的操作。在常见的 REST API 中对应的是 `PUT`、`POST`、`DELETE` 和 `PATCH`。它也包括了会进行数据更新的 `SPARQL` 查询，如果服务器支持的话。
 
-##### `acl:Append`
+### `acl:Append`
 
-gives a more limited ability to write to a resource -- Append-Only. This
-generally includes the HTTP verb `POST`, although some implementations may
-also extend this mode to cover non-overwriting `PUT`s, as well as the
-`INSERT`-only portion of SPARQL-based `PATCH`es. A typical example of Append
-mode usage would be a user's Inbox -- other agents can write (append)
-notifications to the inbox, but cannot alter or read existing ones.
+授权你使用一些可以对资源做出受限的修改的操作，此处的限制是只能把内容追加到文件后面。可以用 REST API 中的 `POST` 来实现，还有的实现方式会选择用非覆写的 `PUT` 或者用 `INSERT`、基于 SPARQL 的 `PATCH` 来做。
 
-##### `acl:Control`
+一个典型的例子就是用户的信箱，其他实体可以往信箱里写入（追加）通知消息，但是无法修改或读取信箱中已有的其他消息。
 
-is a special-case access mode that gives an agent the ability to _view and
-modify the ACL of a resource_. Note that it doesn't automatically imply that the
-agent has `acl:Read` or `acl:Write` access to the resource itself, just to its
-corresponding ACL document. For example, a resource owner may disable their own
-Write access (to prevent accidental over-writing of a resource by an app), but
-be able to change their access levels at a later point (since they retain
-`acl:Control` access).
+### `acl:Control`
+
+这是一个特殊的访问模式，它授权一个实体**查看和修改某个资源的 ACL 文档**。注意这并不意味着实体一定会拥有对那某个资源的 `acl:Read` 或 `acl:Write` 权限，只说明了对 ACL 文档有一些权限而已。例如一个资源的所有者可能会关掉自己的写权限，来防止某个应用误操作某篇重要文件，但他仍然保有打开自己写权限的能力，因为他仍然拥有 `acl:Control` 权限。
 
 ## 默认（继承的）授权
 
-As previously mentioned, not every document needs its own individual ACL
-resource and its own authorizations. Instead, one can can create an
-Authorization for a container (in the container's own ACL resource), and then
-use the `acl:defaultForNew` predicate to denote that any resource within that
-container will _inherit_ that authorization. To put it another way, if an
-Authorization contains `acl:defaultForNew`, it will be applied _by default_ to
-any resource in that container.
+就像前面提到的那样，不是每个文档都需要去单独设置一套 ACL 的，一般来说你可以为容器设置授权（在容器的 ACL 资源里），然后用 `acl:defaultForNew` 谓词来表明任何在这个容器内的资源都**继承**这个授权。换句话说，如果一个授权带有 `acl:defaultForNew`，它就会自动应用到容器内的所有资源上。
 
-You can override the default inherited authorization for any resource by
-creating an individual ACL just for that resource.
+如果想要覆盖继承而来的默认的授权，只要为某个资源创建一个 ACL 资源就可以了。
 
-An example ACL for a container would look something like:
+一个容器的 ACL 可以是这样的：
 
 ```turtle
 # Contents of https://alice.databox.me/docs/.acl
@@ -437,15 +397,14 @@ An example ACL for a container would look something like:
     acl:defaultForNew  <https://alice.databox.me/docs/>.
 ```
 
-**Note:** The `acl:defaultForNew` predicate will soon be renamed to
-`acl:default`, both in the specs and in implementing servers. The semantics, as
-described here, will remain the same
+**注意:** `acl:defaultForNew` 谓词很快会被重命名为
+`acl:default`，此规范和相关参考实现都会做出修改。除了名字发生改变以外，其他的语义都会保持不变。
 
-## See also
+## 参考资料
 
-[Background on CORS](https://solid.github.io/web-access-control-spec/Background)
+[同源策略和 CORS 的背景知识](acl/same-origin)
 
-## Old discussion of access to group files
+## 关于对群文件的访问的旧的讨论
 
 ##### Group Listings - Authentication of External Requests
 
