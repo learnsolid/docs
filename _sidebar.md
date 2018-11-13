@@ -17,4 +17,5 @@
 - [访问权限控制](acl/acl)
   - [Web ACL](acl/wac)
   - [同源策略](acl/same-origin)
+- [Solid 具体的技术细节](paper/www2016)
 - [联系 Solid 中文网团队](contact)
