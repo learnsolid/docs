@@ -406,63 +406,28 @@ SoLiD 的宣传标语是你完全拥有你的数据。因此，由数据的所�
 
 ## 关于对群文件的访问的旧的讨论
 
-##### Group Listings - Authentication of External Requests
+### 群组成员列表 - Authentication of External Requests
 
-_This section is not normative_
+> 这个章节是不规范的
 
-Group Listings via `acl:agentGroup` links introduce the possibility of an ACL
-checking engine having to make requests to other servers. Given that access to
-those external group listings can be protected, the question immediately arises:
-By what mechanism should the ACL checking engine authenticate its request to
-external servers?
+我们介绍过 `acl:agentGroup` 可以链接到一个外部的群组成员列表，也就是说 ACL 鉴权引擎有可能得向其他服务器发出请求，而这些外部的群组成员列表可能也会受到 ACL 的保护，那么问题来了：ACL 鉴权引擎应该通过什么机制验证其对外部服务器的请求？
 
-For example: Alice sends a GET request to a resource on the server
-`https://a.com`. The ACL for that resource links to a group listing on an
-external server, `https://b.com`. In the process of resolving the ACL, `a.com`
-must send a request to `b.com`, to get that group listing. Note that it's not
-Alice herself (or her application) that is sending that request, it's actually
-`a.com` sending it (as part of trying to resolve its own ACL). How should
-`a.com` authenticate itself? Does it have its own credentials, or does it have
-a way to say that it's acting on behalf of Alice? Or both?
+例如：Alice 向服务器 `https://a.com` 上的资源发送 GET 请求，该资源的 ACL 链接到外部服务器上的群组成员列表 `https://b.com`。在解析 ACL 的过程中，`a.com` 必须向 `b.com` 发送请求，以获得该群组成员列表。注意发送对群组成员列表的请求的不是 Alice（或她使用的应用程序），而是 `a.com` 的服务器发送对群组成员列表的请求（在解析自己的 ACL 文档的时候）。`a.com` 应该如何提供鉴权信息？它是使用自己的身份凭据，还是有办法说它此时是在代表 Alice 在发送这个对群组成员列表的请求，还是说同时使用自己和 Alice 的凭据？
 
-There are several implementation possibilities:
+以下是几个可能的实现方案：
 
-**No authentication**. The ACL checking engine sends _un-authenticated_ requests
-to external servers (to fetch group listings). This is the simplest method to
-implement, but suffers from the limitation that those external group listings
-need to be public-readable. THIS IS THE ONLY METHOD CURRENTLY IN USE
+**无认证**。 ACL 检查引擎将**未鉴权**的请求发送到外部服务器（以获取群组成员列表）。这是最简单的实现方法，但是受到这些外部群组成员列表需要公开可读的限制。这是目前的实现中唯一在使用的方法。
 
-**WebID-TLS Delegation**. If your implementation uses the WebID-TLS
-authentication method, it also needs to implement the ability to delegate its
-requests on behalf of the original user.
-(No, the original requester may not be allowed access -- you don't have to able to
-access a group to be in it)
-For a discussion of such a capability,
-see the [Extending the WebID Protocol with Access
-Delegation](http://bblfish.net/tmp/2012/08/05/WebID_Delegation.pdf) paper.
-One thing to keep in mind is - if there are several hops (an ACL request chain
-across more than one other domain), how does this change the delegation
-confirmation algorithm? If the original server is explicitly authorized for
-delegation by the user, what about the subsequent ones?
+**WebID-TLS 委托**。如果你的实现使用 WebID-TLS 身份验证方法，则还需要实现代表原始用户委托其请求的功能。（但这是不存在的，因为原始请求者可能不被允许访问群组成员列表 —— 你可以在一个组里面而你无法访问它）有关此类功能的讨论，请参阅[扩展 WebID 协议以使用访问委托](http://bblfish.net/tmp/2012/08/05/WebID_Delegation.pdf)这篇论文。要记住的一件事是，如果有多个跳板（跨多个其他域的 ACL 请求链），这将如何改变委托确认算法的运行方式？ 如果第一跳的服务器被用户明确地委托授权了，那么后续的服务器又如何呢？
 
-**ID Tokens/Bearer Tokens**. If you're using a token-based authentication system
-such as OpenID Connect or OAuth2 Bearer Tokens, it will also need to implement
-the ability to delegate its ACL requests on behalf of the original user. See
-[PoP/RFC7800](https://tools.ietf.org/html/rfc7800) and [Authorization Cross
-Domain Code](http://openid.bitbucket.org/draft-acdc-01.html) specs for relevant
-examples.
+**ID Tokens/Bearer Tokens**。如果你正在用基于 token 的鉴权系统，例如 OpenID Connect 或 OAuth2 Bearer Tokens，那还需要能代理原始用户的 ACL 请求，例子详见 [PoP/RFC7800](https://tools.ietf.org/html/rfc7800) 和 [Authorization Cross
+Domain Code](http://openid.bitbucket.org/draft-acdc-01.html) 规范。
 
-##### Infinite Request Loops in Group Listings
+### 由于群组成员列表导致的无限请求循环
 
-Since Group Listings (which are linked to from ACL resources using
-the `acl:agentGroup` predicate) reside in regular documents, those documents
-will have their very own `.acl` resources that restrict which users (or groups)
-are allowed to access or change them. This fact, that `.acl`s point to Group
-Listings, which can have `.acl`s of their own, which can potentially also point
-to Group Listings, and so on, introduces the potential for infinite loops
-during ACL resolution.
+由于群组成员列表（使用 `acl：agentGroup` 谓词链接到的 ACL 资源）也是一个常规的互联网文档，因此这些文档将拥有自己的 `.acl` 资源，限制允许哪些用户（或组）访问或改变它们。 而它们的 `.acl` 有可能也会指向某个群组成员列表，然后列表又可能有自己的 `.acl`，也可能指向群组成员列表，等等，所以在 ACL 解析期间有无限循环的可能性。
 
-Take the following situation with two different servers:
+比如下面这个在两个服务器间发生的情况：
 
 ```text
 https://a.com                     https://b.com
@@ -476,56 +441,27 @@ group-listA.acl    ------>        group-listB
   agentGroup <b.com/group-listB>
 ```
 
-The access to `group-listA` is controlled by `group-listA.acl`. So far so good.
-But if `group-listA.acl` contains any `acl:agentGroup` references to _another_
-group listing (say, points to `group-listB`), one runs into potential danger.
-In order to retrieve that other group listing, the ACL-checking engine on
-`https://b.com` will need to check the rules in `group-listB.acl`. And if
-`group-listB.acl` (by accident or malice) points back to `group-listA` a request
-will be made to access `group-listA` on the original server `https://a.com`,
-which would start an infinite cycle.
+对 `group-listA` 的访问由 `group-listA.acl` 控制。但如果 `group-listA.acl` 包含对其他列表的任何 `acl:agentGroup` 引用，例如此处指向了 `group-listB`，则会遇到潜在的危险。为了检索其他群组成员列表，`https://b.com` 上的 ACL 鉴权引擎将需要检查 `group-listB.acl` 中的规则。如果 `group-listB.acl` 由于失误或被恶意地指向`group-listA`，就会导致原始服务器 `https://a.com` 又去访问 `group-listA`，开始无限循环。
 
-To guard against these loops, implementers have several options:
+为了防止出现循环，有以下几个可能的实现方式：
 
-**A) Do not allow cross-domain Group Listing resolutions**.
-The simplest to implement (but also the most limited) option is to disallow
-cross-domain Group Listings resolution requests. That is, the ACL-checking code
-could detect `agentGroup` links pointing to external servers during ACL
-resolution time, and treat those uniformly (as errors, or as automatic "access
-denied").
+**A) 不允许跨域的群组成员列表解析**
+最简单也最局限的实现方式是禁止跨域群组成员列表解析请求。也就是说，ACL 检查器可以在 ACL 解析期就检测文档内有没有指向外部服务器的 `agentGroup` 链接，并在此时统一处理（报错误或自动变成「访问拒绝」）。
 
-**B) Treat Group Listings as special cases**.
-This assumes that the server has the ability to parse or query the contents of a
-Group Listing document _before_ resolving ACL checks -- a design decision that
-some implementations may find unworkable. If the ACL checking engine can inspect
-the contents of a document and know that it's a Group Listing, it can put in
-various safeguards against loops. For example, it could validate ACLs when they
-are created, and disallow external Group Listing links, similar to option A
-above. Note that even if you wanted to ensure that no `.acl`s are allowed for
-Group Listings, and that all such documents would be public-readable, you would
-still have to be able to tell Group Listings apart from other documents, which
-would imply special-case treatment.
+**B) 特殊对待群组成员列表**
+这假设服务器能够在解析 ACL 检查之前就解析或查询群组成员列表文档的内容 —— 一些实现可能自动发现不可行的情况。如果 ACL 鉴权引擎可以检查文档的内容并且知道它是群组成员列表，那么它可以针对循环提供各种安全措施。例如，它可以在创建 ACL 时就验证 ACL，并禁止外部群组成员列表链接，类似于上面的实现方式 A。请注意，即使你希望确保群组成员列表不被允许使用 `.acl`，也就是说群组成员列表都是完全开发访问的，你仍然必须能够将群组成员列表与其他文档区分开来，这就意味着我们得特殊对待群组成员列表。
 
-**C) Create and pass along a tracking/state parameter**.
-For each ACL check request beyond the original server, it would be possible to
-create a nonce-type tracking parameter and pass it along with each subsequent
-request. Servers would then be able to use this parameter to detect loops on
-each particular request chain. However, this is a spec-level solution (instead
-of an individual implementation level), since all implementations have to play
-along for this to work. See issue
-[solid/solid#8](https://github.com/solid/solid/issues/8) for further
-discussion).
+**C) 创建和传递一个跟踪标识或状态参数**
+对于原始服务器之外的每个 ACL 检查请求，可以创建一个 `nonce` 类型的跟踪参数，并将其与每个后续请求一起传递。 然后，服务器可以使用此参数来检测请求链上的循环。但是，这是一个规范级解决方案（而不是某个单独的实现这一级别），因为互联网上的所有实现都必须遵循同一个规范才能做到这一点。在这个 issue 里有详细讨论 [solid/solid#8](https://github.com/solid/solid/issues/8)。
 
-**D) Ignore this issue and rely on timeouts.**
-It's worth noting that if an infinite group ACL loop was created by mistake,
-this will soon become apparent since requests for that resource will time out.
-If the loop was created by malicious actors, this is comparable to a very
-small, low volume DDOS attack, which experienced server operators know how to
-guard against. In either case, the consequences are not disastrous.
+**D) 忽视这个问题，毕竟我们可以坐等请求超时**
+值得注意的是，如果是管理员错误地创建了无限的 ACL 循环，由于对该资源的请求超时，每个用户都会注意到这一点，并意识到出了问题并上报 bug。
 
-### Other ideas about specifying trusted apps
+如果循环是由恶意行为者创建的，那么这就是一个非常小的、低当量的 DDOS 攻击，经验丰富的服务器运营商都知道如何做出防范。所以不论如何，这都不会造成灾难性的后果。
 
-- A reader can ask to use a given app, by publishing the fact that she trusts a given app.
+### 其他指定可行应用的想法
+
+一个访问者可以要求使用某个特定的应用程序，只要他显示说明他信任这个应用：
 
 ```turtle
 <#me> acl:trustsForUse [ acl:origin  <https://calendar.example.com>;
@@ -537,11 +473,9 @@ guard against. In either case, the consequences are not disastrous.
                                      acl:Control].
 ```
 
-A writer could have also more sophisticated requirements, such as that any app Alice
-wants to use must be signed by developer from a given list, and so on.
+数据发布者也可能会有更复杂的需求，例如要求任何 Alice 想要使用的应用都得是某个列表里的开发者签名过的等等。
 
-Therefore, by pulling the profiles of the reader and/or the writer, and/or the Origin app itself,
-the system can be adjusted to allow new apps to be added without bad things happening
+因此，通过拉取访问者和数据发布者的个人档案，以及应用程序的元信息，系统可以适应新的应用的加入，而不会发生糟糕的事情。
 
 ## 故意不支持的特性
 
