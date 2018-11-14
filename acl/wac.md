@@ -130,11 +130,6 @@ WAC 使用 [`http://www.w3.org/ns/auth/acl`](http://www.w3.org/ns/auth/acl) 本�
 
 ## WAC 文档范例
 
-Below is an example ACL resource that specifies that Alice (as identified by her
-WebID `https://alice.databox.me/profile/card#me`) has full access (Read, Write
-and Control) to one of her web resources, located at
-`https://alice.databox.me/docs/file1`.
-
 下面是一个 ACL 资源的范例，它指定 Alice（她的 WebID 是`https://alice.databox.me/profile/card#me` ）对她位于 `https://alice.databox.me/docs/file1` 的一个网络资源具有完全访问权限（读取、写入和控制）。
 
 ```turtle
@@ -152,7 +147,7 @@ and Control) to one of her web resources, located at
 
 ## 描述实体
 
-在 WAC 中，我们使用术语「实体」（_Agent_）来指称被允许访问各种资源的那个**谁**。一般来说，它是指「可以通过 WebID 引用的某人或任何其他行为体」，涵盖了用户、用户组（以及公司、组织等），以及软件代理，例如应用程序或服务等等。
+在 WAC 中，我们使用术语「实体」（Agent）来指称被允许访问各种资源的那个**谁**。一般来说，它是指「可以通过 WebID 引用的某人或任何其他行为体」，涵盖了用户、用户组（以及公司、组织等），以及软件代理，例如应用程序或服务等等。
 
 ### 单个实体
 
