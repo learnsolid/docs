@@ -346,23 +346,23 @@ SoLiD 的宣传标语是你完全拥有你的数据。因此，由数据的所�
 
 `acl:mode` 谓词表示了实体可以对资源进行的一些操作。
 
-### `acl:Read`
+### Read
 
-授权你使用一系列可以称为「读取访问」的操作。在常见的 REST API 中（例如用在 [Solid](https://github.com/solid/solid-spec#https-rest-api) 里的）相对应的是 `GET` 和 `HEAD` 这两个 HTTP 动词。不过其实还应该包括 `QUERY` 和 `SEARCH` 这两个动词，前提是服务器提供支持。
+`acl:Read` 授权你使用一系列可以称为「读取访问」的操作。在常见的 REST API 中（例如用在 [Solid](https://github.com/solid/solid-spec#https-rest-api) 里的）相对应的是 `GET` 和 `HEAD` 这两个 HTTP 动词。不过其实还应该包括 `QUERY` 和 `SEARCH` 这两个动词，前提是服务器提供支持。
 
-### `acl:Write`
+### Write
 
-授权你使用一系列可以对资源做出修改的操作。在常见的 REST API 中对应的是 `PUT`、`POST`、`DELETE` 和 `PATCH`。它也包括了会进行数据更新的 `SPARQL` 查询，如果服务器支持的话。
+`acl:Write` 授权你使用一系列可以对资源做出修改的操作。在常见的 REST API 中对应的是 `PUT`、`POST`、`DELETE` 和 `PATCH`。它也包括了会进行数据更新的 `SPARQL` 查询，如果服务器支持的话。
 
-### `acl:Append`
+### Append
 
-授权你使用一些可以对资源做出受限的修改的操作，此处的限制是只能把内容追加到文件后面。可以用 REST API 中的 `POST` 来实现，还有的实现方式会选择用非覆写的 `PUT` 或者用 `INSERT`、基于 SPARQL 的 `PATCH` 来做。
+`acl:Append` 授权你使用一些可以对资源做出受限的修改的操作，此处的限制是只能把内容追加到文件后面。可以用 REST API 中的 `POST` 来实现，还有的实现方式会选择用非覆写的 `PUT` 或者用 `INSERT`、基于 SPARQL 的 `PATCH` 来做。
 
 一个典型的例子就是用户的信箱，其他实体可以往信箱里写入（追加）通知消息，但是无法修改或读取信箱中已有的其他消息。
 
-### `acl:Control`
+### Control
 
-这是一个特殊的访问模式，它授权一个实体**查看和修改某个资源的 ACL 文档**。注意这并不意味着实体一定会拥有对那某个资源的 `acl:Read` 或 `acl:Write` 权限，只说明了对 ACL 文档有一些权限而已。例如一个资源的所有者可能会关掉自己的写权限，来防止某个应用误操作某篇重要文件，但他仍然保有打开自己写权限的能力，因为他仍然拥有 `acl:Control` 权限。
+`acl:Control` 是一个特殊的访问模式，它授权一个实体**查看和修改某个资源的 ACL 文档**。注意这并不意味着实体一定会拥有对那某个资源的 `acl:Read` 或 `acl:Write` 权限，只说明了对 ACL 文档有一些权限而已。例如一个资源的所有者可能会关掉自己的写权限，来防止某个应用误操作某篇重要文件，但他仍然保有打开自己写权限的能力，因为他仍然拥有 `acl:Control` 权限。
 
 ## 默认（继承的）授权
 
@@ -480,7 +480,7 @@ group-listA.acl    ------>        group-listB
 
 WAC 没有正式的方法来标记一个资源的所有者，也没有一个显式的 Owner 访问权限在那。为了应用开发方便，可以把拥有读取、写入和控制权限的实体称为这个资源的所有者。
 
-### acl:accessToClass
+### accessToClass
 
 谓词 `acl:accessToClass` 尚未得到支撑。
 
