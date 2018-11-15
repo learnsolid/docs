@@ -482,7 +482,7 @@ WAC 没有正式的方法来标记一个资源的所有者，也没有一个显�
 
 ### accessToClass
 
-谓词 `acl:accessToClass` 尚未得到支撑。
+谓词 `acl:accessToClass` 尚未得到支持。
 
 ### 正则表达式
 
