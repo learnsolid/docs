@@ -17,6 +17,7 @@
 3. [Linked Data 介绍](./linkeddata/fundamentals)
 4. [使用 Turtle 表现 Linked Data](./linkeddata/turtle)
 5. [操作 Linked Data](./linkeddata/rdflib)
+6. [一套开发者友好的关联数据开发体验](./ruben/designing-a-linked-data-developer-experience)
 
 ## 参与讨论
 
@@ -25,6 +26,10 @@
 ## 获取 Pod
 
 如果你想获取一个 Solid Pod，请 [点击这里](https://solid.authing.cn) 获取。
+
+## 设计规范
+
+Solid 母公司 Inrupt 提供了一套前端 UI 的设计规范，请参考[这里](https://design.inrupt.com)。
 
 ## 你是个面向未来的开发者吗？
 
