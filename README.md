@@ -17,7 +17,7 @@
 3. [Linked Data 介绍](./linkeddata/fundamentals)
 4. [使用 Turtle 表现 Linked Data](./linkeddata/turtle)
 5. [操作 Linked Data](./linkeddata/rdflib)
-6. [一套开发者友好的关联数据开发体验](./ruben/designing-a-linked-data-developer-experience)
+6. [一套开发者友好的关联数据开发框架](./ruben/designing-a-linked-data-developer-experience)
 
 ## 参与讨论
 
