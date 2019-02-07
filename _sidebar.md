@@ -18,4 +18,5 @@
   - [Web ACL](acl/wac)
   - [同源策略](acl/same-origin)
 - [Solid 具体的技术细节](paper/www2016)
+- [设计一套开发者友好的关联数据开发体验](ruben/designing-a-linked-data-developer-experience)
 - [联系 Solid 中文网团队](contact)
