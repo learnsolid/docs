@@ -1,6 +1,6 @@
 # LDflex：通过 JavaScript 查询 Web 网络
-## 简单数据的表达方式应该是简单的
-你可能已经注意到，上面 React 组件易于使用的地方是它可以方便地检索互联数据。使用一种名为 ldflex 的查询语言——我为此创建了该语言。 ldflex 是 JavaScript 的[领域专用语言（dsl）](https://baike.baidu.com/item/领域特定语言/2826893)，这意味着它的所有表达式最终都会被转化为 JavaScript 对象。
+## 简单数据需要简单的表达式
+你可能已经注意到，上面 React 组件易于使用的地方是它可以方便地检索互联数据。使用一种名为 [ldflex](https://github.com/solid/query-ldflex) 的查询语言——我为此创建了该语言。 ldflex 是 JavaScript 的[领域专用语言（dsl）](https://baike.baidu.com/item/领域特定语言/2826893)，这意味着它的所有表达式最终都会被转化为 JavaScript 对象。
 
 ldflex 是我提出的一种解决方案，用于满足开发者在构建应用时快速获取数据的需求。比如获取用户名或主页等内容时，开发者无需再写很多行代码，也不必使用硬编码方式。ldflex 通过简洁的表达式满足这些需求，通过浏览器中的 solid.data 暴露到全局：
 
@@ -12,12 +12,12 @@ for await (const friend of solid.data.user.friends.firstName)
 ```
 上面几行代码内部到底做了什么？虽然它看起来像遍历本地对象，但每次我们等待 ldflex 表达式时，我们实际上都在查询 Web。以下是 ldflex 表达式`solid.data.user.friends.firstName` 背后发生的事情：
 
-获取当前用户的 WebID URL。
-将 friends 和 firstName 解析为其唯一标识符。
-将表达式转化成一个 sparql 查询。
-通过 http 获取根节点的文档（在本例中为用户的WebID）。
-对文档执行 sparql 查询并返回结果。
-每当需要获取数据，这些步骤（或其变体）都需要开发者亲自实现。虽然可以把这些步骤抽象成函数，但是目前大部分开发者已经习惯了直接从对象中取数据。这样的代码长度比将 GraphQL 查询注入到React组件要短得多;事实上，表达式可以简单地写为内联属性。
+1. 获取当前用户的 WebID URL。
+2. 将 friends 和 firstName 解析为其唯一标识符。
+3. 将表达式转化成一个 sparql 查询([例子](https://solid.github.io/ldflex-playground/#%5Bhttps%3A%2F%2Fruben.verborgh.org%2Fprofile%2F%23me%5D.friends.firstName))。
+4. 通过 http 获取根节点的文档（在本例中为用户的WebID）。
+5. 对文档执行 sparql 查询并返回结果。
+每当需要获取数据，这些步骤（或其变体）都需要开发者亲自实现。虽然可以把这些步骤抽象成函数，但是目前大部分开发者已经习惯了直接从对象中取数据。这样的代码长度比将 [GraphQL 查询](https://www.apollographql.com/docs/react/why-apollo.html#declarative-data)注入到React组件要短得多;事实上，表达式可以简单地写为内联属性。
 
 除了用户数据，你还可以在Web上查询任何互联数据资源：
 ```javascript
@@ -26,7 +26,7 @@ solid.data [ 'https://ruben.verborgh.org/profile/#me'].homepage
 solid.data [ 'https://ruben.verborgh.org/profile/#me'].friends.firstName
 solid.data [ 'https://ruben.verborgh.org/profile/#me'] .blog.schema_blogPost.label
 ```
-这些表达式可以单独使用，也可以作为Solid React组件的src属性中的值使用（为简洁起见，省略了solid.data）。这些表达式不光只能用在React里。例如，如果你想用Angular或Vue.js构建，ldflex也会派上用场。
+这些表达式可以单独使用，也可以作为[Solid React组件](https://ruben.verborgh.org/blog/2018/12/28/designing-a-linked-data-developer-experience/#react-linked-data)的src属性中的值使用（为简洁起见，省略了solid.data）。这些表达式不光只能用在React里。例如，如果你想用Angular或Vue.js构建，ldflex也会派上用场。
 
 让“开发体验”好一点
 我见过的几个比较旧的库，将Linked Data资源进行特定的**面向对象包装**。你给他们一个文件的url，他们会为你提供一个人物，照片或任何其他特定领域概念的json对象。这种方法有几个缺点：
