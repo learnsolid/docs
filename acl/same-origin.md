@@ -138,16 +138,6 @@ CORS设计在历史上大多数时候都是整个网络中最糟糕的设计。�
 对CORS的第二次调整是在浏览器[还没完全实现完第一次调整的时候发生的](
 https://lists.w3.org/Archives/Public/www-archive/2017Aug/0003.html)。
 
-Notwithstanding issues with the design of CORS, Chrome doesn’t in fact
-do it properly.
-
-If you request the same resource first from one origin and then from
-another, it serves the cached version, which then fails cord because the
-Origin and access-control-allow-origin
-headers don’t match. This even when the returned headers have “Vary:
-Origin”, which should prevent that same cached version being reused for
-a different origin.
-
 尽管 CORS 的设计存在问题，但 Chrome 实际上也并没有正确地实现它。如果你首先从一个源请求相同的资源，然后从另一个源请求相同的资源，浏览器将尝试提供缓存版本，然后由于 Origin 和`access-control-allow-origin` 响应头不匹配而失败。即使返回的响应头具有 `Vary：Origin`，这也应该防止相同的缓存版本被重用于不同的源。
 
 > 问题出现于 Chrome Version 59.0.3071.115 (Official Build) (64-bit)
