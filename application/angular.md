@@ -1,10 +1,10 @@
-# 基于 Angular 编写 Solid 程序
+# 基于 Angular 编写 SoLiD 程序
 
 注意：阅读本篇文章需要你有 JavaScript 和 NPM 经验。
 
 ## 准备工作
 
-使用 Angular 开发 Solid 的最简单方法是使用 Yeoman 生成器，如果你不熟悉 Yeoman，可以[点击这里](http://yeoman.io/learning/)查看 Yeoman 入门指南。Yeoman 是一个脚手架工具，他可以快速生成 Angular 项目需要的所有基本文件、文件夹和依赖项。
+使用 Angular 开发 SoLiD 的最简单方法是使用 Yeoman 生成器，如果你不熟悉 Yeoman，可以[点击这里](http://yeoman.io/learning/)查看 Yeoman 入门指南。Yeoman 是一个脚手架工具，他可以快速生成 Angular 项目需要的所有基本文件、文件夹和依赖项。
 
 我们还在 Github 开源了一套 solid-angualr 程序：[https://github.com/Inrupt-inc/generator-solid-angular](https://github.com/Inrupt-inc/generator-solid-angular)。
 
@@ -16,9 +16,9 @@ $ mkdir test && cd test
 $ yo @inrupt/solid-angular
 ```
 
-然后输入应用名称，完成这些步骤后，你将看到一个示例程序，其中包括了 Solid 应用程序的基础知识。这个程序能通过 Solid 进行用户身份认证，还可以从 pod 中获取数据。如果你要启动程序，可以用 `angular-cli` 或 `ng serve`。
+然后输入应用名称，完成这些步骤后，你将看到一个示例程序，其中包括了 SoLiD 应用程序的基础知识。这个程序能通过 SoLiD 进行用户身份认证，还可以从 pod 中获取数据。如果你要启动程序，可以用 `angular-cli` 或 `ng serve`。
 
-欢迎来到 Solid 的世界。
+欢迎来到 SoLiD 的世界。
 
 ## 依赖
 
@@ -28,11 +28,11 @@ $ yo @inrupt/solid-angular
   - Github: [https://github.com/angular/angular](https://github.com/angular/angular)
   - 网站: [https://angular.io/](https://angular.io/)
 - rdflib.js
-  - 一个必须的库，用来操作 Linked Data 和 Solid pods
+  - 一个必须的库，用来操作 Linked Data 和 SoLiD pods
   - Github: [https://github.com/linkeddata/rdflib.js](https://github.com/linkeddata/rdflib.js)
   - 网站: [http://linkeddata.github.io/rdflib.js/doc/](http://linkeddata.github.io/rdflib.js/doc/)
 - solid-auth-client
-  - 一个必须的库，用来认证 Solid 用户
+  - 一个必须的库，用来认证 SoLiD 用户
   - Github: [https://github.com/solid/solid-auth-client](https://github.com/solid/solid-auth-client)
   - 网站: [https://solid.github.io/solid-auth-client/](https://solid.github.io/solid-auth-client/)
 - PureCSS
@@ -50,19 +50,19 @@ $ yo @inrupt/solid-angular
 
 您可以登录以查看身份认证是如何工作的，也可以查看你的个人资料信息。登录成功后，你可以随意修改数据。
 
-这个最简应用的目标是展示身份认证的过程以及如何操作 Solid 的数据。
+这个最简应用的目标是展示身份认证的过程以及如何操作 SoLiD 的数据。
 
 ## 工作流程
 
 ### 步骤 1: 注册
 
-所有使用 Solid 的用户都必须有一个 Solid 帐号，[点击这里](https://solid.inrupt.com/get-a-solid-pod) 查看如何注册。
+所有使用 SoLiD 的用户都必须有一个 SoLiD 帐号，[点击这里](https://solid.inrupt.com/get-a-solid-pod) 查看如何注册。
 
-在未来，我们会在 solid-angular 项目中增加注册 Solid 的流程。
+在未来，我们会在 solid-angular 项目中增加注册 SoLiD 的流程。
 
 ### 步骤 2: 登录
 
-一旦用户注册了 Solid，你的用户就可以登录任何支持 Solid 的 pod。示例程序中提供了登录功能，默认情况下，页面将重定向到触发程序的地址，在我们的示例中，它将返回到我们的个人资料页面。
+一旦用户注册了 SoLiD，你的用户就可以登录任何支持 SoLiD 的 pod。示例程序中提供了登录功能，默认情况下，页面将重定向到触发程序的地址，在我们的示例中，它将返回到我们的个人资料页面。
 
 如果你不想通过重定向登录，那么可以用 login-popup，它提供了一个登录弹出窗口，登录操作会在弹出窗口中进行。
 
@@ -138,11 +138,11 @@ this.updateManager.update(data.deletions, data.insertions, (response, success, m
 
 Angular 开发者应该很熟悉项目结构，他保持了 `angular-cli` 的原有项目结构，我们保持了一些示例组件，你可以视需求在里面创建其他文件。
 
-我们的重点是学习 Solid 和 RDF.js，所以不会使用 Angular 的高级功能。
+我们的重点是学习 SoLiD 和 RDF.js，所以不会使用 Angular 的高级功能。
 
 ### 感兴趣可看
 
-以下是 angular Solid 项目的主要文件：
+以下是 angular SoLiD 项目的主要文件：
 
 - src/app/card/card.component
   - 个人资料页
@@ -162,4 +162,4 @@ Angular 开发者应该很熟悉项目结构，他保持了 `angular-cli` 的原
 3. 我们的表单不能处理拥有多个值的字段。比如你可能会有不同类型的电话（家庭、工作），但是目前的示例程序只认识第一个手机号。
 4. 地址目前不可用，因为地址不是一个简单的字段，而是一个字段集合，但是 UI 没有对这个特殊的字段做相应处理。我们这么做的目的是演示如何处理错误。
 5. 点击右上角的资料按钮你可以退出用户；
-6. 我们修改了 tsconfig.ts 中的一些配置，以确保兼容 Solid 项目，
+6. 我们修改了 tsconfig.ts 中的一些配置，以确保兼容 SoLiD 项目，

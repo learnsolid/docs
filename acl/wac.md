@@ -5,7 +5,7 @@
 互联网访问控制 (WAC) 规范 （用在 SoLid 中的）是基于 Tim Berners-Lee 在 2009 年 9 月发布的一个提案，这个提案在发布后在被社区推动完善，最终发布在了
 [Web Access Control Wiki](https://www.w3.org/wiki/WebAccessControl) 里。这份规范是 Wiki 里内容的一个特别选定的子集。主要是为 [LDP](https://www.w3.org/TR/ldp/)（以及 [LDP
 Next](https://www.w3.org/community/ldpnext/)）这类系统服务，例如
-[Solid](https://github.com/solid/solid) 项目（及其前身
+[SoLiD](https://github.com/solid/solid) 项目（及其前身
 [solid spec](https://github.com/solid/solid-spec)）。
 
 **当前规范版本：** `v.0.5.0`（详见英文原文的 [CHANGELOG.md](https://github.com/solid/web-access-control-spec/blob/master/CHANGELOG.md)）
@@ -348,7 +348,7 @@ SoLiD 的宣传标语是你完全拥有你的数据。因此，由数据的所�
 
 ### Read
 
-`acl:Read` 授权你使用一系列可以称为「读取访问」的操作。在常见的 REST API 中（例如用在 [Solid](https://github.com/solid/solid-spec#https-rest-api) 里的）相对应的是 `GET` 和 `HEAD` 这两个 HTTP 动词。不过其实还应该包括 `QUERY` 和 `SEARCH` 这两个动词，前提是服务器提供支持。
+`acl:Read` 授权你使用一系列可以称为「读取访问」的操作。在常见的 REST API 中（例如用在 [SoLiD](https://github.com/solid/solid-spec#https-rest-api) 里的）相对应的是 `GET` 和 `HEAD` 这两个 HTTP 动词。不过其实还应该包括 `QUERY` 和 `SEARCH` 这两个动词，前提是服务器提供支持。
 
 ### Write
 

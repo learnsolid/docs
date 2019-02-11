@@ -1,3 +1,3 @@
-# 编写 Solid 应用
+# 编写 SoLiD 应用
 
-- [基于 Angular 编写 Solid 程序](application/angular.md)
+- [基于 Angular 编写 SoLiD 程序](application/angular.md)

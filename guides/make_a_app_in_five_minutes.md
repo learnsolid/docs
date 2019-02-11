@@ -1,12 +1,12 @@
-# 用午休时间做一个基于 Solid 的应用
+# 用午休时间做一个基于 SoLiD 的应用
 
-这是针对新接触 Solid 的用户的快速入门。整个过程很简单，你甚至可以用一个午休时间完成。通过几个简单的步骤，我们将构建一个个人资料查看器。
+这是针对新接触 SoLiD 的用户的快速入门。整个过程很简单，你甚至可以用一个午休时间完成。通过几个简单的步骤，我们将构建一个个人资料查看器。
 
 ## 学习目标：
 
-1. 使用 Solid 构建基本应用程序
+1. 使用 SoLiD 构建基本应用程序
 2. 登录和退出
-3. 从 Solid pod 中读取数据
+3. 从 SoLiD pod 中读取数据
 
 ## 预备知识：
 
@@ -18,13 +18,13 @@
 1. 你喜欢的文本编辑器
 2. 在本地运行的 Web 服务器（例如 `npm install -g local-web-server` ）
 
-## 步骤零：获取一个 Solid pod
+## 步骤零：获取一个 SoLiD pod
 
-为了读取和写入数据，你需要拥有一个 Solid Pod 和身份。如果你还没有，请[点击这里](https://solid.inrupt.com/get-a-solid-pod)获取。
+为了读取和写入数据，你需要拥有一个 SoLiD Pod 和身份。如果你还没有，请[点击这里](https://solid.inrupt.com/get-a-solid-pod)获取。
 
 ## 步骤一：配置一个基本的 HTML 页面
 
-创建一个空白的 HTML 文档用来编写 Solid 程序：
+创建一个空白的 HTML 文档用来编写 SoLiD 程序：
 
 ```html
 <!doctype html>
@@ -45,7 +45,7 @@
 
 ## 步骤二：增加 jQuery
 
-本教程只是为了演示，因此我们没选择其他更加高级的框架，这可以让我们专注于 Solid 本身。我们正在加快兼容 Angular, React 和 Vue。
+本教程只是为了演示，因此我们没选择其他更加高级的框架，这可以让我们专注于 SoLiD 本身。我们正在加快兼容 Angular, React 和 Vue。
 
 [点击这里](https://github.com/solid/profile-viewer-tutorial/tree/tutorials/lunch-break/steps/02)获取此步骤的代码。
 
@@ -66,7 +66,7 @@
 
 [点击这里](https://github.com/solid/profile-viewer-tutorial/tree/tutorials/lunch-break/steps/03)获取此步骤的代码。
 
-## 步骤四：增加 Solid 身份认证客户端
+## 步骤四：增加 SoLiD 身份认证客户端
 
 `solid-auth-client` 库帮助我们认证用户身份和安全的从用户的 pod 中获取数据，你需要手动添加以下的组件：
 
@@ -79,7 +79,7 @@
 
 ## 步骤五：增加一个登录按钮
 
-向页面添加登录按钮，并设置事件处理程序，以便单击该按钮可触发 Solid 登录窗口。 这是通过由 solid-auth-client 初始化的 window.solid.auth 提供的 popupLogin 函数实现的。 我们将弹出窗口的位置作为参数传递。
+向页面添加登录按钮，并设置事件处理程序，以便单击该按钮可触发 SoLiD 登录窗口。 这是通过由 solid-auth-client 初始化的 window.solid.auth 提供的 popupLogin 函数实现的。 我们将弹出窗口的位置作为参数传递。
 
 向页面添加登录按钮，并监听点击时间。这是通过由 `solid-auth-client` 初始化的 `window.solid.auth` 提供的 `popupLogin` 函数实现的，我们通过参数指定了窗口弹出的位置。
 
@@ -142,7 +142,7 @@ solid.auth.trackSession(session => {
 
 ## 步骤八：增加 RDFlib.js
 
-RDFlib.js 是一个 JavaScript 框架，它能让我们与存储在 Solid pods 中的 Linked Data 交互，你可以从 [https://linkeddata.github.io/rdflib.js/dist/rdflib.min.js](https://linkeddata.github.io/rdflib.js/dist/rdflib.min.js) 获取压缩过的代码。
+RDFlib.js 是一个 JavaScript 框架，它能让我们与存储在 SoLiD pods 中的 Linked Data 交互，你可以从 [https://linkeddata.github.io/rdflib.js/dist/rdflib.min.js](https://linkeddata.github.io/rdflib.js/dist/rdflib.min.js) 获取压缩过的代码。
 
 请将此框架放在 `solid-auth-client` 之后，这样 RDFlib 才可以使用身份认证功能。
 
@@ -220,6 +220,6 @@ $('#view').click(async function loadProfile() {
 });
 ```
 
-强大灵活的 Linked Data 让我们可以在不同的 pod 之间操作数据，相信到这里你已经对 Solid 有了不少了解，请继续翻阅我们的文档了解更多吧。
+强大灵活的 Linked Data 让我们可以在不同的 pod 之间操作数据，相信到这里你已经对 SoLiD 有了不少了解，请继续翻阅我们的文档了解更多吧。
 
 [点击这里](https://github.com/solid/profile-viewer-tutorial/tree/tutorials/lunch-break/steps/11)获取此步骤的代码。

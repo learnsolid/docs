@@ -1,8 +1,8 @@
-# 安装并运行一个 NodeJS Solid 服务器
+# 安装并运行一个 NodeJS SoLiD 服务器
 
-目前 Solid 的服务端实现仅支持 [Node.js](https://nodejs.org/) v8 及以上。整个程序在 Github 上开源，名称为 [solid-server](https://github.com/solid/node-solid-server)。如果你想快速预览，我们提供了一个 [README](https://github.com/solid/node-solid-server#install) 来帮助你快速安装 ```solid-server```。在这个例子中，我们主要演示如何在 Debian 操作系统上安装并运行 solid-server。
+目前 SoLiD 的服务端实现仅支持 [Node.js](https://nodejs.org/) v8 及以上。整个程序在 Github 上开源，名称为 [solid-server](https://github.com/solid/node-solid-server)。如果你想快速预览，我们提供了一个 [README](https://github.com/solid/node-solid-server#install) 来帮助你快速安装 ```solid-server```。在这个例子中，我们主要演示如何在 Debian 操作系统上安装并运行 solid-server。
 
-## 示例安装：在 Debian GNU/Linux 上安装 Solid Server
+## 示例安装：在 Debian GNU/Linux 上安装 SoLiD Server
 
 首先安装 Node.js 和 NPM：
 
@@ -17,9 +17,9 @@ $ sudo apt-get install -y nodejs build-essential
 $ npm install -g solid-server
 ```
 
-接下来，你需要想一个 hostname，在这个例子中，我们会使用 ```your.host.example.org``` 用来演示。当然，你最好还有一台服务器用来部署 Solid Server（你的开发机也行）。Solid Server 中的所有配置文件、数据以及元信息数据库都可以分布式存储，但是这个例子中我们把它们都放到一起。
+接下来，你需要想一个 hostname，在这个例子中，我们会使用 ```your.host.example.org``` 用来演示。当然，你最好还有一台服务器用来部署 SoLiD Server（你的开发机也行）。SoLiD Server 中的所有配置文件、数据以及元信息数据库都可以分布式存储，但是这个例子中我们把它们都放到一起。
 
-所有的 Solid Server 都需要一个 SSL key 和证书用来加密通信，这可以通过 [Let’s Encrypt](https://letsencrypt.org/) 获得。除此之外，最简单的方式是用 ```certbot```，请按照下面这个教程安装 ```certbot```。
+所有的 SoLiD Server 都需要一个 SSL key 和证书用来加密通信，这可以通过 [Let’s Encrypt](https://letsencrypt.org/) 获得。除此之外，最简单的方式是用 ```certbot```，请按照下面这个教程安装 ```certbot```。
 
 首先将以下信息加到 ```/etc/apt/sources.list``` 中：
 
@@ -40,7 +40,7 @@ $ apt-get -t stretch-backports install certbot
 $ certbot certonly --authenticator standalone -d your.host.example.org
 ```
 
-最后，我们初始化 Solid：
+最后，我们初始化 SoLiD：
 
 ```shell
 $ solid init
@@ -51,9 +51,9 @@ $ solid init
 ```shell
 ? Path to the folder you want to serve. Default is /var/www/your.host.example.org/data
 ? SSL port to run on. Default is 8443 443
-? Solid server uri (with protocol, hostname and port) https://your.host.example.org
+? SoLiD server uri (with protocol, hostname and port) https://your.host.example.org
 ? Enable WebID authentication Yes
-? Serve Solid on URL path /
+? Serve SoLiD on URL path /
 ? Path to the config directory (for example: /etc/solid-server) /var/www/your.host.example.org/config
 ? Path to the config file (for example: ./config.json) /var/www/your.host.example.org/config.json
 ? Path to the server metadata db directory (for users/apps etc) /var/www/your.host.example.org/.db
@@ -68,14 +68,14 @@ config created on /root/config.json
 
 Then, you need to create the paths that you entered. You would also need to copy the config.json file to where you indicated it should be.
 
-然后就可以正式启动 Solid 了：
+然后就可以正式启动 SoLiD 了：
 
 ```shell
 $ solid start
 ```
 
-我们推荐使用 ```systemd``` 自动重启和停止 Solid Server。
-为了安全起见，不要以 root 用户运行 Solid Server，请创建一个用户来运行，例如：
+我们推荐使用 ```systemd``` 自动重启和停止 SoLiD Server。
+为了安全起见，不要以 root 用户运行 SoLiD Server，请创建一个用户来运行，例如：
 
 ```shell
 $ adduser --system --ingroup www-data --no-create-home solid
@@ -113,7 +113,7 @@ $ cd /var/www/your.host.example.org/
 $ chown solid:www-data config/ data/ .db/
 ```
 
-最后，用 ```systemctl``` 启动 Solid Server：
+最后，用 ```systemctl``` 启动 SoLiD Server：
 
 ```shell
 $ systemctl start solid.service
@@ -135,4 +135,4 @@ your.host.example.org = /var/www/your.host.example.org/data
 certbot renew -w /var/www/your.host.example.org/data/
 ```
 
-现在，你的 Solid Server 应该已经可以正常工作了！请尽情享受 Solid 世界吧！
+现在，你的 SoLiD Server 应该已经可以正常工作了！请尽情享受 SoLiD 世界吧！
