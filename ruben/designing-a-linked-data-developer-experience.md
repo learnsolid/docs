@@ -241,7 +241,7 @@ LDFlex 通过 JavaScript 代理对象工作，它提供拦截任意属性的机�
 
 回想一下，对于 Linked Data，术语有全球范围的共识，因此它们可以跨越不同的后端而依然具有相同的含义。因此，LDFlex 的核心任务是将简单的术语翻译成具有共识的 URL 术语。例如，solid.data 上的路径 `user.friends.firstName` 将通过以下方式解析：
 
-1. user 变为：https://you.example/profile#you（当前用户的 WebID）
+1. user 变为：https://you.example/profile#you （当前用户的 WebID）
 2. friends 变成：http://xmlns.com/foaf/0.1/knows
 3. firstName 成为：http://xmlns.com/foaf/0.1/givenName
 
