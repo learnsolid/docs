@@ -18,7 +18,7 @@
 
 你可以拥有无限个 POD，只要有 SoLiD 服务器的地方，他们就可以被访问。如果你想自己搭一个 SoLiD Server，请看这篇[文章](https://learnsolid.cn/docs/#/server/node)，如果你想申请一个 Pod，请[点击这里](https://solid.inrupt.com/get-a-solid-pod)。
 
-注：中文 POD 提供商即将上线。
+注：中文 POD 可在[此处](https://solid.authing.cn/)获取。
 
 ![storage](https://solid.inrupt.com/sites/default/files/2018-09/How%20It%20Works-2%402x.png)
 
