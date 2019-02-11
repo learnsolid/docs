@@ -141,7 +141,7 @@ https://lists.w3.org/Archives/Public/www-archive/2017Aug/0003.html)。
 尽管 CORS 的设计存在问题，但 Chrome 实际上也并没有正确地实现它。如果你首先从一个源请求相同的资源，然后从另一个源请求相同的资源，浏览器将尝试提供缓存版本，然后由于 Origin 和`access-control-allow-origin` 响应头不匹配而失败。即使返回的响应头具有 `Vary：Origin`，这也应该防止相同的缓存版本被重用于不同的源。
 
 > 问题出现于 Chrome Version 59.0.3071.115 (Official Build) (64-bit)
-
+> <br />
 > 火狐在 2018-07 也出了同样的问题。
 
 ## 参考文献
