@@ -25,7 +25,7 @@
 
 今年早些时候，我在 [GraphQL Day](https://medium.com/graphqlconf/graphql-day-in-amsterdam-on-april-14-dee87bd9fc21) 非常清楚地看到了前端开发者的重要性。不知不觉地，这种查询语言已经成功地聚集起塞满一个房间的人，这一天里有很多有趣的人在使用 [GraphQL](http://graphql.cn/) 查询各种数据，并在此基础上构建漂亮的应用程序。GraphQL 被（错误地）称赞为 REST 架构的替代品，他们大声斥责其他解决方案的复杂性，例如语义网的查询语言 SPARQL。而具有讽刺意味的是，我了解了未来将会大大复杂化并重塑 GraphQL 的计划，这是为了让 GraphQL 的能力增强到能够涵盖 SPARQL 多年来积累的基础技术的地步。
 
-但是，因此而责怪 GraphQL 或前端开发社区是非常错误的。多年来，我们已经使用Linked Data，RDF 和 SPARQL 获得了金牌，而我们始终未能覆盖那些能够将其带给终端用户的前端开发者。这是我们的失败，和其他人无关。
+但是，因此而责怪 GraphQL 或前端开发社区是非常错误的。多年来，我们已经使用 Linked Data，RDF 和 SPARQL 获得了金牌，而我们始终未能覆盖那些能够将其带给终端用户的前端开发者。这是我们的失败，和其他人无关。
 
 我坚信我们应该将语义网带到 Web 上。 我们需要为前端开发人员提供工具和库。这就是为什么自从加入语义网社区以来，我花了很多时间从头开始为浏览器创建 JavaScript 库，只有这样我们才可以在 Web 上实现语义网。如果我不坚持这样做，我会更快地推进，但是我建造的东西永远不会到达终端用户。
 
@@ -35,7 +35,7 @@
 
 ### 去中心化 Web 应用拥有多个后端
 
-第一个关键的问题是分布式 Web 应用是否需要关联数据。为什么不像其他 Web API 一样，服务器发送客户端可以轻松解析的自定义 JSON？Solid 中的分布式想法是应用程序没有自己的数据存储，而是将数据存储在用户选择的位置。因此，应用程序需要更加灵活，以便与不同的后端兼容。多个应用程序可能同时使用多个后端。例如，社交媒体应用中的数据可以存储在不同的位置。
+第一个关键的问题是分布式 Web 应用是否需要关联数据。为什么不像其他 Web API 一样，服务器发送客户端可以轻松解析的自定义 JSON？SoLiD 中的分布式想法是应用程序没有自己的数据存储，而是将数据存储在用户选择的位置。因此，应用程序需要更加灵活，以便与不同的后端兼容。多个应用程序可能同时使用多个后端。例如，社交媒体应用中的数据可以存储在不同的位置。
 
 ![smb-img](https://ruben.verborgh.org/images/blog/single-multiple-backends.svg)
 
@@ -66,21 +66,21 @@
 }
 ```
 
-由于像 `type`, `object`, `actor` 类似的单词在不同的应用中有不同的含义，关联数据将始终使用 `链接(links)` 来建立一个通用含义。上面的代码片段中有一个 `@context` 键，这个键使得 `actor` 指代 `https://www.w3.org/ns/activitystreams#actor`。这也叫 [JSON-LD (JSON Linked Data) 上下文（Context）](https://www.w3.org/TR/JSON-LD/#the-context)。
+由于像 `type`, `object`, `actor` 类似的单词在不同的应用中有不同的含义，不同的开发者可能对于它们的涵义会产生不同的理解，为避免这种歧义，关联数据将始终使用 `链接(links)` 来建立一个有共识通用含义。上面的代码片段中有一个 `@context` 字段，这个字段使得 `actor` 指代 `https://www.w3.org/ns/activitystreams#actor`。这也叫 [JSON-LD (JSON Linked Data) 语境/上下文（Context）](https://www.w3.org/TR/JSON-LD/#the-context)。
 
-但通过抽象层进行抽象后，你不用了解上述任何内容。
+复杂吗？但通过抽象层进行抽象后，你就不用了解上述的任何内容了！
 
 下面两章会详细探讨 [React](http://react-china.org/) 和[关联数据表达式](https://ruben.verborgh.org/blog/2018/12/28/designing-a-linked-data-developer-experience/#LDFlex)的使用方法，主要针对 JavaScript 开发者，如果你不感兴趣可以跳过。
 
-## Solid React 组件
+## SoLiD React 组件
 
 ### 选择一个语言和框架
 
-在设计开发者友好的开发框架时，第一个问题是要定位的语言和框架，JavaScript 和 React 在 [2018 年的 JavaScript 生态](https://2018.stateofjs.com/)中成为明显的赢家。对于一般的框架我并不是特别兴奋，因为它们的受欢迎程度上升和下降得如此之快，以至于没有一个被认为是安全的赌注（还记得 jQuery 吗）。尽管从未学过 React，但我发现很容易调整代码来兼容 React，所以我很好奇并开始探索。然后我开始编写自己的组件来简化一些重复的 Solid 身份认证代码。当我发现[高阶组件（HoC）](https://reactjs.org/docs/higher-order-components.html)时，我完全迷上了构建 React 组件库的禅道。
+在设计开发者友好的开发框架时，第一个问题是要定位的语言和框架，JavaScript 和 React 在 [2018 年的 JavaScript 生态](https://2018.stateofjs.com/)中成为明显的赢家。对于一般的框架我并不是特别兴奋，因为它们的受欢迎程度上升和下降得如此之快，以至于没有一个被认为是安全的赌注（你还记得 jQuery 吗）。尽管从未学过 React，但我发现很容易微调代码来兼容 React，所以我感到很好奇并开始探索。然后我开始编写自己的组件来简化一些重复的 SoLiD 身份认证代码。当我发现[高阶组件（HoC）](https://reactjs.org/docs/higher-order-components.html)时，我完全迷上了构建 React 组件库的禅道。
 
-然而，我和 Solid 团队都没有和 React 完全绑死，我们还会留意其他当前和即将到来的框架。重要的是，许多经验教训（以及一些生成的库）可以直接应用于其他框架。
+然而，我和 SoLiD 团队都没有和 React 完全绑死，我们还会留意其他当前和即将到来的框架。重要的是，许多经验教训（以及一些在开发过程中生成的库）可以直接应用于其他框架。
 
-可以在 [GitHub](https://github.com/solid/react-components) 和 [NPM](https://www.npmjs.com/package/@solid/react) 上找到 Solid 的 React 组件。
+可以在 [GitHub](https://github.com/solid/react-components) 和 [NPM](https://www.npmjs.com/package/@solid/react) 上找到 SoLiD 的 React 组件。
 
 ### 登录和退出
 
