@@ -165,21 +165,21 @@ const fullName = store.any($RDF.sym(user), FOAF('name'));
 $('#fullName').text(fullName && fullName.value);
 ```
 
-我想以这种方式书写：
+我想，以这种方式书写：
 
 ```javascript
 <Value src="user.name" />
 ```
 
-绝对更**有趣和更健壮**。如果一件事复杂度很高，那么人们很可能本能的抗拒。因此，这将导致 SoLiD 永远不会和终端普通用户产生联系，或者在最坏的情况下，根本不会有 SoLiD 应用。这更加突出了设计开发者友好的关联数据开发体验是多么重要。
+绝对**更有趣、更健壮**。如果一件事复杂度很高，那么人们很可能本能的抗拒。因此，这将导致 SoLiD 永远不会和终端普通用户产生联系，或者在最坏的情况下，根本不会有 SoLiD 应用。这更加突出了设计开发者友好的关联数据开发体验是多么重要。
 
 ## LDFlex：通过 JavaScript 查询 Web 网络
 
 ### 简单数据需要简单的表达式
 
-你可能已经注意到，上面 React 组件易于使用的地方是它可以方便地检索互联数据。使用一种名为 [LDFlex](https://github.com/solid/query-LDFlex) 的查询语言——我为此创建了该语言。 LDFlex 是 JavaScript 的[领域专用语言（dsl）](https://baike.baidu.com/item/领域特定语言/2826893)，这意味着它的所有表达式最终都会被转化为 JavaScript 对象。
+你可能已经注意到，上面 React 组件易于使用的地方是它可以方便地检索互联数据。使用一种名为 [LDFlex](https://github.com/solid/query-LDFlex) 的查询语言 —— 我为此创建了该语言。LDFlex 是 JavaScript 的[领域专用语言（DSL）](https://baike.baidu.com/item/领域特定语言/2826893)，这意味着它的所有表达式最终都会被转化为 JavaScript 对象。
 
-LDFlex 是我提出的一种解决方案，用于满足开发者在构建应用时快速获取数据的需求。比如获取用户名或主页等内容时，开发者无需再写很多行代码，也不必使用硬编码方式。LDFlex 通过简洁的表达式满足这些需求，通过浏览器中的 solid.data 暴露到全局：
+LDFlex 是我提出的一种解决方案，用于满足开发者在构建应用时快速获取数据的需求。比如获取用户名或主页等内容时，开发者无需再写很多行代码，也不必使用硬编码一堆底层操作。LDFlex 通过简洁的表达式满足这些需求，如果它通过浏览器中的 solid.data 暴露到全局，就可以这么做：
 
 ```javascript
 const name = await solid.data.user.firstName;
@@ -195,7 +195,8 @@ for await (const friend of solid.data.user.friends.firstName)
 3. 将表达式转化成一个 SPARQL 查询([例子](https://solid.github.io/LDFlex-playground/#%5Bhttps%3A%2F%2Fruben.verborgh.org%2Fprofile%2F%23me%5D.friends.firstName))。
 4. 通过 http 获取根节点的文档（在本例中为用户的 WebID）。
 5. 对文档执行 SPARQL 查询并返回结果。
-   每当需要获取数据，这些步骤（或其变体）都需要开发者亲自实现。虽然可以把这些步骤抽象成函数，但是目前大部分开发者已经习惯了直接从对象中取数据。这样的代码长度比将 [GraphQL 查询](https://www.apollographql.com/docs/react/why-apollo.html#declarative-data)注入到 React 组件要短得多;事实上，表达式可以简单地写为内联属性。
+
+每当需要获取数据，这些步骤（或其变体）以前都需要开发者去亲自实现。虽然可以把这些步骤抽象成函数，但是目前大部分开发者已经习惯了直接从对象中取数据。而且这样的代码长度还比把 [GraphQL 查询](https://www.apollographql.com/docs/react/why-apollo.html#declarative-data)注入到 React 组件要短得多；事实上，表达式可以简单地写为内联属性。
 
 除了用户数据，你还可以在 Web 上查询任何互联数据资源：
 
@@ -215,9 +216,9 @@ solid.data['https://ruben.verborgh.org/profile/#me'].blog.schema_blogPost.label;
 1. 这些库只能用于特定一类事物。如果你正在处理不同类型的数据，则无法使用它们。这很不对劲，因为互联数据可以为任何东西建模。
 2. 他们假设对象具有一组特定的属性。这是一个最大的限制，因为互联数据中的数据结构是任意的。
 3. 他们通过将互联数据扁平化为本地对象来删除链接。但是，该对象不可能包含所有数据，因为关联数据遍布整个 Web。
-4. 换句话说，通过将互联数据降级为普通的 json 对象，我们失去了互联数据的优点和灵活性，并且只继承了缺点。发生这种情况是因为 JSON 对象是树，而 Linked Data 是图。因此，关联数据的纯面向对象抽象在设计上就是失败的。
+4. 换句话说，通过将互联数据降级为普通的 json 对象，我们失去了互联数据的优点和灵活性，并且只继承了缺点。发生这种情况是因为 JSON 对象是树，而 Linked Data 是图（Graph）。因此，关联数据的纯面向对象的抽象在设计上就是失败的。
 
-在设计 LDFlex 时，我一直在寻找一种抽象方式，能够释放互联数据的力量和“感觉”，同时仍然让开发者熟悉。这就是为什么 LDFlex 表达式感觉像本地 JSON 对象，而实际上不是。仔细体会下面这种形式的表达式：
+在设计 LDFlex 时，我一直在寻找一种抽象方式，能够释放互联数据的力量和「感觉」，同时仍然让开发者熟悉。这就是为什么 LDFlex 表达式感觉像本地 JSON 对象，而实际上不是。仔细体会下面这种形式的表达式：
 
 ```javascript
 solid.data['https://ruben.verborgh.org/profile/#me'].label;
@@ -236,33 +237,33 @@ const name = await expression;
 
 实现原理：JavaScript Proxy 和 JSON-LD
 
-LDFlex 通过 JavaScript 代理对象工作，它提供拦截任意属性的机制。使用 Proxy，我们可以确保任意复杂的路径（如 `my.random.path.expression`）会被解析为有意义的值，即使 my 对象实际上没有任何这些属性。
+LDFlex 通过 JavaScript 代理对象工作，它提供拦截任意属性的机制。使用 Proxy，我们可以确保任意复杂的路径（如 `my.random.path.expression`）会被解析为有意义的值，即使 `my` 对象实际上没有任何这些属性。
 
-回想一下，对于 Linked Data，术语具有普遍含义，因此它们可以跨越不同的后端。因此，LDFlex 的核心任务是将简单的术语翻译成 URL。例如，solid.data 上的路径 `user.friends.firstName` 将通过以下方式解析：
+回想一下，对于 Linked Data，术语有全球范围的共识，因此它们可以跨越不同的后端而依然具有相同的含义。因此，LDFlex 的核心任务是将简单的术语翻译成具有共识的 URL 术语。例如，solid.data 上的路径 `user.friends.firstName` 将通过以下方式解析：
 
 1. user 变为：https://you.example/profile#you（当前用户的 WebID）
 2. friends 变成：http://xmlns.com/foaf/0.1/knows
 3. firstName 成为：http://xmlns.com/foaf/0.1/givenName
 
-至关重要的是，这些转换并没有硬编码到 LDFlex 本身。从术语到 URL 的转换可以通过 JSON-LD context 自由配置。因此，LDFlex 将这种使用 @context 标记 json 对象的机制应用于 Web 上无限的互联数据。这种灵活性是通过多个库实现的：
+至关重要的是，这些转换并没有硬编码到 LDFlex 本身。从术语到 URL 的转换可以通过 JSON-LD context 自由配置。因此，LDFlex 将这种使用 `@context` 标记 JSON 对象的机制应用于 Web 上无限的互联数据。这种灵活性是通过多个库实现的：
 
 LDFlex 核心库包含解析和查询机制，但是并没有具体实现。它知道如何解析路径并生成 SPARQL 查询，但你仍然需要使用 JSON-LD context 和查询引擎进行配置。
 
-Comunica for LDFlex 可以让 Comunica 查询引擎与 LDFlex 表达式一起使用。LDFlex 核心库将给 Comunica 传递一个 SPARQL 查询以供执行。
+[Comunica for LDFlex](https://github.com/RubenVerborgh/LDflex-Comunica) 可以让 [Comunica 查询引擎](https://github.com/comunica/comunica/)与 LDFlex 表达式一起使用。LDFlex 核心库将给 Comunica 传递一个 SPARQL 查询以供执行。
 
 LDFlex for SoLiD 是 LDFlex 的一套配置，它提供 user object 和包含 SoLiD 专用术语的 JSON-LD context。因此，此配置定义了 user，friends 和 firstName 对 SoLiD 应用程序的含义。
 
-它们合在一起，共同提供了一种感觉——拥有无限属性的本地对象，可以访问整个 Web 上的互联数据。LDFlex 核心库实现了 await 和 for await 支持，就这点魔法。当 await 用于 LDFlex 表达式时，表达式被视为 Promise，内部实现就是调用 then 方法。LDFlex 将到查询执行的第一个结果通过 then 方法向外传递。同样，for await 被包装成对 `Symbol.asyncIterator` 的方法调用。
+它们合在一起，共同提供了一种使用体验 —— 拥有无限属性的本地对象，可以访问整个 Web 上的互联数据。LDFlex 核心库实现了 await 和 for await 支持，就这点魔法。当 await 用于 LDFlex 表达式时，表达式被视为 Promise，内部实现就是调用 then 方法。LDFlex 将到查询执行的第一个结果通过 then 方法向外传递。同样，for await 被包装成对 `Symbol.asyncIterator` 的方法调用。
 
-在 SoLiD LDFlex playground 探索 LDFlex。你可以在 SoLiD LDFlex 文档及其 JSON-LD context 中找到表达式的灵感。
+请到 [SoLiD LDFlex playground](https://github.com/solid/ldflex-playground) 探索 LDFlex。你可以在 SoLiD LDFlex 文档及其 JSON-LD context 中找到关于这种表达式的灵感。
 
 ### 未来就是对 Web 的读写
 
-SoLiD 旨在通过互联数据实现读写 Web。作为 Inrupt 的技术倡导者，我在优化开发体验方面来支持这一目标。在我之前的博客文章中，我指出了查询在去中心化应用程序的重要性，因为应用程序不会（也不应该）知道如何检索数据。 LDFlex 通过简单的查询表达式实现了这一点。虽然 LDFlex 不是所有查询需求的解决方案，它覆盖了许多场景下快速查询的案例，写起来比其他查询语言更快。
+SoLiD 旨在通过互联数据实现读写 Web。作为 Inrupt 公司的技术倡导者，我在优化开发体验方面来支持这一目标。在我之前的博客文章中，我指出了查询在去中心化应用程序的重要性，因为应用程序不会（也不应该）知道如何检索数据。 LDFlex 通过简单的查询表达式实现了这一点。虽然 LDFlex 不是所有查询需求的解决方案，它覆盖了许多场景下快速查询的案例，写起来比其他查询语言更快。
 
 在未来，我们肯定希望探索更强大的语言，如 GraphQL。我故意不提 SPARQL，因为 GraphQL 的开发者工具要好得多，将 GraphQL 通用化，而不是从头开始构建 SPARQL 工具可能更有意义。
 
-LDFlex 的下一个飞跃显然是**写入**：使添加或更改数据像读取数据一样容易。由于互联数据的灵活性，写入数据带来了一些挑战，例如在哪存储数据，如何存储数据。编写互联数据并不意味着编写**三元组**，正如以下例子所示（亲自尝试一下！）：
+LDFlex 的下一个飞跃显然是**写入**：使添加或更改数据像读取数据一样容易。由于互联数据的灵活性，写入数据带来了一些挑战，例如在哪存储数据，如何存储数据。编写互联数据并不意味着编写**三元组**，正如以下例子所示（你可以去亲自尝试一下！）：
 
 ```javascript
 // 关注我
@@ -281,13 +282,13 @@ solid.data['https://facebook.com/'].dislike();
 
 因此，问题在于我们怎样才能最好地为前端开发人员铺平道路。Dan Brickley 和 Libby Miller 在撰写时写道：
 
-> 人们认为 RDF 是一种痛苦，因为它很复杂。事实更糟。RDF 非常简单，但它允许你处理非常复杂的现实数据和问题。
+> 人们认为 RDF 是一个痛苦之源，因为它很复杂。事实上，情况更糟，RDF 非常简单，但是它让你可以处理非常复杂的现实数据和接触那些令人痛苦的现实世界的问题。
 
 但是，这并不意味着每个人都需要接触到 RDF。除了去中心化编程的可怕复杂性之外，RDF 引入了一种不同的思维方式，我们不应该将它强加在前端开发人员身上。相反，我们应该释放前端开发者们已有的大量知识，融入他们的框架和工具。
 
 我们对前端开发者唯一的要求就是理解互联数据。试图将互联数据包装在简单的 JSON 对象中会丧失去中心化生态系统的优势。不要低估了前端开发人员走出舒适区域的意愿。根据我的经验，互联数据激发了以前从未见过它的开发人员，因为他们突然可以访问整个 Web 数据，而不只是从一个后端。它开辟了巨大的机会，因为他们不再依靠收获数据来建立一些不错的东西。
 
-这些开发人员不会受到过去语义 Web 错误的影响，例如我们过度依赖 XML 和本体。我们不会尝试重新启动语义 Web，也不会再迫使开发人员进入我们的世界。这是关于**互联数据**作为构建去中心化应用程序的解决方案。 Schema.org 的成功表明这些解决方案还有发展空间，我看到了在 SoLiD 世界中迈出第一步的年轻开发人员的热情。这就是未来，而不是过去。
+这些开发人员不会受到过去语义 Web 错误的影响，例如我们过度依赖 XML 和本体。我们不会尝试重新启动语义 Web，也不会再迫使开发人员进入我们的世界。这是关于**互联数据**作为构建去中心化应用程序的解决方案。 [Schema.org](https://schema.org/) 的成功表明这些解决方案还有发展空间，我看到了在 SoLiD 世界中迈出第一步的年轻开发人员的热情。这就是未来，而不是过去。
 
 重要的是，React 和 LDFlex 库不仅为前端开发人员提供了构建终端用户应用程序的工具。它们还包含了一些基本组件用来创建新的库和工具。我们的目标应该是培养这些生态系统，而不是自己编写一切。
 
