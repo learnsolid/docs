@@ -31,3 +31,7 @@
 ## 获取 Pod
 
 如果你想获取一个 SoLiD Pod，请 [点击这里](https://solid.authing.cn) 获取。
+
+## 成为 SoLiD 开发者
+
+[SoLiD 路线图](https://github.com/LearnSolid/solid-roadmap)。

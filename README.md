@@ -12,6 +12,8 @@
 
 ## 学习路径
 
+可以先查看我们提供的可视化 [SoLiD 路线图](https://github.com/LearnSolid/solid-roadmap) 来成为 SoLiD 开发者。
+
 1. [认识 SoLiD](./guides/basic)
 2. [SoLiD 规范介绍](./guides/spec)
 3. [Linked Data 介绍](./linkeddata/fundamentals)
