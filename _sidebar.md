@@ -19,4 +19,6 @@
 - [访问权限控制](acl/acl)
   - [Web ACL](acl/wac)
   - [同源策略](acl/same-origin)
+- [提案](/proposal/proposal)
+  - [通过激励协作实现语义 Web 的弱中心化](/proposal/blockchain)
 - [联系 SoLiD 中文网团队](contact)
